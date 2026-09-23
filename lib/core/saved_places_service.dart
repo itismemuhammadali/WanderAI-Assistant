@@ -13,12 +13,24 @@ class SavedPlacesService extends ChangeNotifier {
 
   List<Map<String, dynamic>> get savedPlaces => _savedPlaces;
 
-  bool isPlaceSaved(String placeId) {
-    return _savedPlaces.any((place) => place['id'] == placeId);
+  bool isPlaceSaved(dynamic placeId, [String? placeName]) {
+    if (placeId == null && (placeName == null || placeName.isEmpty)) return false;
+    final idStr = placeId?.toString();
+    return _savedPlaces.any((place) {
+      if (idStr != null && idStr.isNotEmpty && place['id']?.toString() == idStr) {
+        return true;
+      }
+      if (placeName != null && placeName.isNotEmpty && place['name']?.toString() == placeName) {
+        return true;
+      }
+      return false;
+    });
   }
 
   void savePlace(Map<String, dynamic> place) {
-    if (!isPlaceSaved(place['id'])) {
+    final placeId = place['id'];
+    final placeName = place['name']?.toString();
+    if (!isPlaceSaved(placeId, placeName)) {
       _savedPlaces.add({
         ...place,
         'savedAt': DateTime.now().toString().split(' ')[0],
@@ -28,14 +40,25 @@ class SavedPlacesService extends ChangeNotifier {
     }
   }
 
-  void removePlace(String placeId) {
-    _savedPlaces.removeWhere((place) => place['id'] == placeId);
+  void removePlace(dynamic placeId, [String? placeName]) {
+    final idStr = placeId?.toString();
+    _savedPlaces.removeWhere((place) {
+      if (idStr != null && idStr.isNotEmpty && place['id']?.toString() == idStr) {
+        return true;
+      }
+      if (placeName != null && placeName.isNotEmpty && place['name']?.toString() == placeName) {
+        return true;
+      }
+      return false;
+    });
     notifyListeners();
   }
 
   void togglePlace(Map<String, dynamic> place) {
-    if (isPlaceSaved(place['id'])) {
-      removePlace(place['id']);
+    final placeId = place['id'];
+    final placeName = place['name']?.toString();
+    if (isPlaceSaved(placeId, placeName)) {
+      removePlace(placeId, placeName);
     } else {
       savePlace(place);
     }

@@ -52,7 +52,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
     super.dispose();
   }
 
-  bool get _isSaved => _savedPlacesService.isPlaceSaved(_destination['id']);
+  bool get _isSaved => _savedPlacesService.isPlaceSaved(_destination['id'], _destination['name']?.toString());
 
   @override
   Widget build(BuildContext context) {
@@ -86,18 +86,47 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
               // ======================================================
               if (AppConfig.enableSavedPlaces)
                 IconButton(
-                  icon: Icon(
-                    _isSaved ? Icons.bookmark : Icons.bookmark_outline,
-                    color: Colors.white,
-                    size: 28,
+                  tooltip: _isSaved ? 'Remove from saved' : 'Save place',
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: _isSaved
+                          ? AppTheme.accentTeal
+                          : Colors.black.withValues(alpha: 0.35),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      _isSaved ? Icons.bookmark : Icons.bookmark_outline,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
                   onPressed: () {
+                    final wasAlreadySaved = _isSaved;
                     _savedPlacesService.togglePlace(_destination);
+                    setState(() {});
+
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                          _isSaved ? 'Removed from saved places' : 'Added to saved places',
+                        content: Row(
+                          children: [
+                            Icon(
+                              wasAlreadySaved ? Icons.bookmark_outline : Icons.bookmark,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              wasAlreadySaved
+                                  ? 'Removed from saved places'
+                                  : 'Saved to your wishlist!',
+                            ),
+                          ],
                         ),
+                        backgroundColor: wasAlreadySaved
+                            ? Colors.grey.shade800
+                            : AppTheme.accentTeal,
                         duration: const Duration(seconds: 2),
                       ),
                     );
