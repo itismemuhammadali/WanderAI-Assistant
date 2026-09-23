@@ -49,6 +49,15 @@ class ChatRequest(BaseModel):
     user_id: Optional[str] = "traveler_ali"
     message: str = Field(..., example="What is the best time to visit Hunza Valley and what should I pack?")
 
+class AuthSignUpRequest(BaseModel):
+    email: str = Field(..., example="traveler@example.com")
+    password: str = Field(..., example="Password123!")
+    full_name: Optional[str] = Field(default="Traveler", example="Muhammad Ali")
+
+class AuthLoginRequest(BaseModel):
+    email: str = Field(..., example="traveler@example.com")
+    password: str = Field(..., example="Password123!")
+
 # ====================================================================
 # API ENDPOINTS
 # ====================================================================
@@ -62,6 +71,8 @@ async def root():
         "timestamp": datetime.utcnow().isoformat(),
         "database": "Supabase PostgreSQL (Active / Fallback Ready)",
         "endpoints": [
+            "/api/auth/signup",
+            "/api/auth/login",
             "/api/nlp/parse",
             "/api/routes/calculate",
             "/api/pois/corridor",
@@ -70,6 +81,48 @@ async def root():
             "/api/chat"
         ]
     }
+
+@app.post("/api/auth/signup", status_code=status.HTTP_201_CREATED)
+async def signup(req: AuthSignUpRequest):
+    """
+    Registers a new user into Supabase Authentication and syncs with the database.
+    """
+    if not req.email or "@" not in req.email:
+        raise HTTPException(status_code=400, detail="Please enter a valid email address.")
+    if len(req.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters long.")
+
+    try:
+        user_data = await db.sign_up_user(req.email, req.password, req.full_name or "Traveler")
+        return {
+            "success": True,
+            "message": "Account created successfully in Supabase!",
+            "data": user_data
+        }
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Registration failed: {e}")
+
+@app.post("/api/auth/login")
+async def login(req: AuthLoginRequest):
+    """
+    Authenticates user credentials against Supabase Authentication.
+    """
+    if not req.email or not req.password:
+        raise HTTPException(status_code=400, detail="Email and password are required.")
+
+    try:
+        user_data = await db.login_user(req.email, req.password)
+        return {
+            "success": True,
+            "message": "Login successful!",
+            "data": user_data
+        }
+    except PermissionError as pe:
+        raise HTTPException(status_code=401, detail=str(pe))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Login failed: {e}")
 
 @app.post("/api/nlp/parse")
 async def parse_travel_query(req: QueryRequest):

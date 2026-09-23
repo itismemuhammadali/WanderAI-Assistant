@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../core/app_routes.dart';
 import '../core/app_config.dart';
+import '../core/api_service.dart';
 
 class LoginSignupScreen extends StatefulWidget {
   const LoginSignupScreen({super.key});
@@ -77,8 +78,23 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
       _isLoading = true;
     });
 
-    // Simulate authentication delay
-    await Future.delayed(const Duration(milliseconds: 600));
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final fullName = _nameController.text.trim();
+
+    Map<String, dynamic> result;
+    if (isLogin) {
+      result = await ApiService.login(
+        email: email,
+        password: password,
+      );
+    } else {
+      result = await ApiService.signUp(
+        email: email,
+        password: password,
+        fullName: fullName.isNotEmpty ? fullName : 'Traveler',
+      );
+    }
 
     if (!mounted) return;
 
@@ -86,15 +102,41 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
       _isLoading = false;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(isLogin ? 'Welcome back!' : 'Account created successfully!'),
-        backgroundColor: Colors.green.shade700,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    if (result['success'] == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(result['message'] ?? (isLogin ? 'Welcome back!' : 'Account created successfully!')),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.green.shade700,
+          duration: const Duration(seconds: 2),
+        ),
+      );
 
-    Navigator.of(context).pushReplacementNamed(AppRoutes.mainShell);
+      Navigator.of(context).pushReplacementNamed(AppRoutes.mainShell);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(result['message'] ?? 'Authentication failed. Please try again.'),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.red.shade700,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   void _continueAsGuest() {

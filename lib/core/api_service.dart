@@ -147,4 +147,82 @@ class ApiService {
       ...bookingData,
     };
   }
+
+  /// User Sign Up with Supabase backend
+  static Future<Map<String, dynamic>> signUp({
+    required String email,
+    required String password,
+    required String fullName,
+  }) async {
+    try {
+      final url = Uri.parse('$baseUrl/api/auth/signup');
+      final res = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email.trim(),
+          'password': password,
+          'full_name': fullName.trim(),
+        }),
+      ).timeout(const Duration(seconds: 6));
+
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 201 || res.statusCode == 200) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Account created successfully in Supabase!',
+          'data': data['data'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['detail'] ?? 'Registration failed. Please try again.',
+        };
+      }
+    } catch (e) {
+      debugPrint('Sign up error: $e');
+      return {
+        'success': false,
+        'message': 'Cannot reach backend server. Please verify backend is running.',
+      };
+    }
+  }
+
+  /// User Login with Supabase backend
+  static Future<Map<String, dynamic>> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final url = Uri.parse('$baseUrl/api/auth/login');
+      final res = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email.trim(),
+          'password': password,
+        }),
+      ).timeout(const Duration(seconds: 6));
+
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Login successful!',
+          'data': data['data'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['detail'] ?? 'Invalid email or password.',
+        };
+      }
+    } catch (e) {
+      debugPrint('Login error: $e');
+      return {
+        'success': false,
+        'message': 'Cannot reach backend server. Please verify backend is running.',
+      };
+    }
+  }
 }

@@ -429,6 +429,7 @@ class DatabaseService:
 
         self._bookings = []
         self._chat_history = []
+        self._users = []
 
     async def get_packages(self, region: Optional[str] = None) -> List[Dict[str, Any]]:
         if self.use_supabase and self.client:
@@ -540,6 +541,105 @@ class DatabaseService:
         }
         self._chat_history.append(entry)
         return entry
+
+    async def sign_up_user(self, email: str, password: str, full_name: str) -> Dict[str, Any]:
+        """
+        Registers a user in Supabase Authentication and syncs to public.users table.
+        """
+        clean_email = email.strip().lower()
+        clean_name = full_name.strip() or "Traveler"
+
+        if self.use_supabase and self.client:
+            try:
+                # Create user directly in Supabase Auth
+                auth_res = self.client.auth.admin.create_user({
+                    "email": clean_email,
+                    "password": password,
+                    "email_confirm": True,
+                    "user_metadata": {"full_name": clean_name}
+                })
+
+                user_id = str(auth_res.user.id)
+
+                # Sync into public.users table
+                try:
+                    self.client.table("users").upsert({
+                        "id": user_id,
+                        "email": clean_email,
+                        "full_name": clean_name,
+                        "password_hash": "supabase_auth_managed",
+                        "role": "traveler"
+                    }).execute()
+                except Exception as table_err:
+                    print(f"Sync to public.users warning: {table_err}")
+
+                return {
+                    "user_id": user_id,
+                    "email": clean_email,
+                    "full_name": clean_name,
+                    "role": "traveler",
+                    "source": "supabase_auth"
+                }
+            except Exception as e:
+                err_msg = str(e)
+                if "already" in err_msg.lower():
+                    raise ValueError("An account with this email address already exists.")
+                raise ValueError(f"Signup failed: {err_msg}")
+
+        # Local mock fallback
+        mock_id = str(uuid.uuid4())
+        user_record = {
+            "id": mock_id,
+            "email": clean_email,
+            "full_name": clean_name,
+            "role": "traveler",
+            "source": "mock_store"
+        }
+        self._users.append(user_record)
+        return user_record
+
+    def _get_auth_client(self):
+        from supabase import create_client
+        return create_client(SUPABASE_URL, SUPABASE_KEY)
+
+    async def login_user(self, email: str, password: str) -> Dict[str, Any]:
+        """
+        Authenticates a user against Supabase Auth.
+        """
+        clean_email = email.strip().lower()
+
+        if self.use_supabase and self.client:
+            try:
+                # Use fresh client instance so service_role privileges on self.client are never overwritten
+                auth_client = self._get_auth_client()
+                res = auth_client.auth.sign_in_with_password({
+                    "email": clean_email,
+                    "password": password
+                })
+                user = res.user
+                full_name = (user.user_metadata or {}).get("full_name", clean_email.split("@")[0].title())
+                session_token = res.session.access_token if res.session else "token"
+                return {
+                    "user_id": str(user.id),
+                    "email": user.email,
+                    "full_name": full_name,
+                    "token": session_token,
+                    "source": "supabase_auth"
+                }
+            except Exception as e:
+                err_str = str(e).lower()
+                if "invalid" in err_str or "credentials" in err_str:
+                    raise PermissionError("Invalid email or password.")
+                raise PermissionError(f"Authentication failed: {e}")
+
+        # Local mock fallback
+        return {
+            "user_id": str(uuid.uuid4()),
+            "email": clean_email,
+            "full_name": clean_email.split("@")[0].title(),
+            "token": "mock-token",
+            "source": "mock_store"
+        }
 
 # Singleton database instance
 db = DatabaseService()

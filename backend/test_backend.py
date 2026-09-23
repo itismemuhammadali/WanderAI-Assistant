@@ -62,8 +62,18 @@ async def test_all_endpoints():
         print("✓ [POST /api/chat] AI Assistant response received:")
         print("   ", chat_res[:90], "...")
 
+        # 8. Supabase Auth Login
+        login_payload = {
+            "email": "ali.traveler@example.com",
+            "password": "Password123!"
+        }
+        res = await client.post("/api/auth/login", json=login_payload)
+        assert res.status_code == 200
+        auth_data = res.json()["data"]
+        print(f"✓ [POST /api/auth/login] Supabase Auth verified: User={auth_data['email']}, Source={auth_data['source']}")
+
     print("==================================================")
-    print("ALL 7 ENDPOINTS VERIFIED AND PASSING 100%!")
+    print("ALL 8 ENDPOINTS (INCLUDING SUPABASE AUTH) VERIFIED 100%!")
     print("==================================================")
 
 if __name__ == "__main__":
