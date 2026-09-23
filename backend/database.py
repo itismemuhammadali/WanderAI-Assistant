@@ -2,10 +2,14 @@ import os
 import uuid
 from datetime import datetime, date
 from typing import List, Dict, Any, Optional
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Load environment variables if available
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+
 
 # In-memory mock database to ensure 100% functionality out-of-the-box
 # when Supabase credentials are not yet configured.
@@ -198,10 +202,29 @@ class DatabaseService:
         return self._pois
 
     async def create_booking(self, booking_data: Dict[str, Any]) -> Dict[str, Any]:
+        # Validate or default UUIDs for Supabase Postgres schema
+        raw_user_id = booking_data.get("user_id")
+        user_uuid = None
+        if raw_user_id:
+            try:
+                user_uuid = str(uuid.UUID(str(raw_user_id)))
+            except (ValueError, TypeError):
+                user_uuid = "a0000000-0000-0000-0000-000000000001"
+        else:
+            user_uuid = "a0000000-0000-0000-0000-000000000001"
+
+        raw_pkg_id = booking_data.get("package_id")
+        pkg_uuid = None
+        if raw_pkg_id:
+            try:
+                pkg_uuid = str(uuid.UUID(str(raw_pkg_id)))
+            except (ValueError, TypeError):
+                pkg_uuid = None
+
         booking_record = {
             "id": str(uuid.uuid4()),
-            "user_id": booking_data.get("user_id", "demo-traveler-id"),
-            "package_id": booking_data.get("package_id"),
+            "user_id": user_uuid,
+            "package_id": pkg_uuid,
             "travel_date": str(booking_data.get("travel_date", date.today())),
             "guests_count": int(booking_data.get("guests_count", 1)),
             "total_price": float(booking_data.get("total_price", 45000.0)),
@@ -221,6 +244,7 @@ class DatabaseService:
 
         self._bookings.append(booking_record)
         return booking_record
+
 
     async def get_user_bookings(self, user_id: str) -> List[Dict[str, Any]]:
         if self.use_supabase and self.client:

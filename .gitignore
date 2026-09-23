@@ -17,6 +17,8 @@ migrate_working_dir/
 backend/.env
 backend/venv/
 backend/.venv/
+supabase/.temp/
+
 
 # IntelliJ related
 *.iml
