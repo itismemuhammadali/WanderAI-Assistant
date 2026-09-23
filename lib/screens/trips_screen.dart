@@ -27,8 +27,15 @@ class TripsScreen extends StatefulWidget {
 }
 
 class _TripsScreenState extends State<TripsScreen> {
+  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _sortBy = 'lowToHigh';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   final List<String> _sortOptions = [
     'lowToHigh',
@@ -55,6 +62,22 @@ class _TripsScreenState extends State<TripsScreen> {
     return trips;
   }
 
+  void _openFilters() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (context, scrollController) => FiltersScreen(
+          onApply: (filters) {},
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final trips = _getFilteredTrips();
@@ -73,44 +96,47 @@ class _TripsScreenState extends State<TripsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ======================================================
-                // 🔴 [START] INPUT: Search & Filter Modal Launcher Bar
-                // DESCRIPTION: Tapping opens the interactive bottom sheet filter modal.
-                // 🎓 TO HIDE THIS INPUT:
-                //    Comment out lines from [START] to [END] of this block.
+                // 🔴 [START] INPUT: Interactive Search Bar & Filters
+                // DESCRIPTION: Full text search filtering with dedicated filter button.
                 // ======================================================
-                GestureDetector(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (context) => DraggableScrollableSheet(
-                        initialChildSize: 0.9,
-                        minChildSize: 0.5,
-                        maxChildSize: 0.95,
-                        expand: false,
-                        builder: (context, scrollController) => FiltersScreen(
-                          onApply: (filters) {},
-                        ),
-                      ),
-                    );
+                TextField(
+                  controller: _searchController,
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                    });
                   },
-                  child: TextField(
-                    enabled: false,
-                    decoration: InputDecoration(
-                      hintText: 'Search destinations...',
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: const Icon(Icons.tune),
-                      filled: true,
-                      fillColor: AppTheme.surface,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
+                  decoration: InputDecoration(
+                    hintText: 'Search destinations...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (_searchQuery.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.clear, size: 20),
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() => _searchQuery = '');
+                            },
+                          ),
+                        IconButton(
+                          icon: const Icon(Icons.tune),
+                          tooltip: 'Filters',
+                          onPressed: _openFilters,
+                        ),
+                      ],
+                    ),
+                    filled: true,
+                    fillColor: AppTheme.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
                     ),
                   ),
                 ),
                 // ======================================================
-                // 🔴 [END] INPUT: Search & Filter Modal Launcher Bar
+                // 🔴 [END] INPUT: Interactive Search Bar & Filters
                 // ======================================================
 
                 const SizedBox(height: 12),
@@ -179,7 +205,7 @@ class _TripsScreenState extends State<TripsScreen> {
                 //    Comment out lines from [START] to [END] of this block.
                 // ======================================================
                 : ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     itemCount: trips.length,
                     itemBuilder: (context, index) {
                       final trip = trips[index];
@@ -187,6 +213,9 @@ class _TripsScreenState extends State<TripsScreen> {
                         padding: const EdgeInsets.only(bottom: 16),
                         child: DestinationCard(
                           destination: trip,
+                          isHorizontal: false,
+                          width: double.infinity,
+                          height: 240,
                           onTap: () {
                             Navigator.pushNamed(context, AppRoutes.destinationDetail, arguments: trip);
                           },

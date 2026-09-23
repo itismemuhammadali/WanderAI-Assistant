@@ -52,24 +52,28 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
+        padding: const EdgeInsets.symmetric(vertical: 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Text(
                 'Where to next?',
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w800),
               ),
-              const SizedBox(height: 24),
+            ),
+            const SizedBox(height: 24),
 
-              // ======================================================
-              // 🔴 [START] INPUT: Search Destinations Bar
-              // DESCRIPTION: Interactive search bar that taps into the Booking flow.
-              // 🎓 TO HIDE THIS INPUT:
-              //    Comment out lines from [START] to [END] of this block.
-              // ======================================================
-              GestureDetector(
+            // ======================================================
+            // 🔴 [START] INPUT: Search Destinations Bar
+            // DESCRIPTION: Interactive search bar that taps into the Booking flow.
+            // 🎓 TO HIDE THIS INPUT:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: GestureDetector(
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingScreen()));
                 },
@@ -81,103 +85,110 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              // ======================================================
-              // 🔴 [END] INPUT: Search Destinations Bar
-              // ======================================================
+            ),
+            // ======================================================
+            // 🔴 [END] INPUT: Search Destinations Bar
+            // ======================================================
 
-              const SizedBox(height: 32),
+            const SizedBox(height: 32),
 
-              // ======================================================
-              // 🔴 [START] SECTION: Top Picks Horizontal Carousel
-              // DESCRIPTION: Shows curated top 3 Pakistani tourist highlights.
-              // 🎓 TO HIDE THIS SECTION:
-              //    Comment out lines from [START] to [END] of this block.
-              // ======================================================
-              Text('Top Picks', style: Theme.of(context).textTheme.headlineMedium),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 180,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  clipBehavior: Clip.none,
-                  itemCount: DummyData.popularDestinations.length > 3 ? 3 : DummyData.popularDestinations.length,
-                  itemBuilder: (context, index) {
-                    final dest = DummyData.popularDestinations[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.destinationDetail, arguments: dest);
-                      },
-                      child: Container(
-                        width: 160,
-                        margin: const EdgeInsets.only(right: 16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              UnsplashImage(
-                                query: dest['name']!,
-                                fallbackUrl: dest['image'],
-                                fit: BoxFit.cover,
+            // ======================================================
+            // 🔴 [START] SECTION: Top Picks Horizontal Carousel
+            // DESCRIPTION: Shows curated top 3 Pakistani tourist highlights.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Text('Top Picks', style: Theme.of(context).textTheme.headlineMedium),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 180,
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                itemCount: DummyData.popularDestinations.length > 3 ? 3 : DummyData.popularDestinations.length,
+                itemBuilder: (context, index) {
+                  final dest = DummyData.popularDestinations[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, AppRoutes.destinationDetail, arguments: dest);
+                    },
+                    child: Container(
+                      width: 160,
+                      margin: const EdgeInsets.only(right: 16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            UnsplashImage(
+                              query: dest['name']!,
+                              fallbackUrl: dest['image'],
+                              fit: BoxFit.cover,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: Colors.black.withValues(alpha: 0.3),
                               ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  color: Colors.black.withValues(alpha: 0.3),
-                                ),
-                                padding: const EdgeInsets.all(12),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      dest['name']!,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    dest['name']!,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.star, color: Colors.amber, size: 14),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        dest['rating'].toString(),
+                                        style: const TextStyle(color: Colors.white, fontSize: 12),
                                       ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.star, color: Colors.amber, size: 14),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          dest['rating'].toString(),
-                                          style: const TextStyle(color: Colors.white, fontSize: 12),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
-              // ======================================================
-              // 🔴 [END] SECTION: Top Picks Horizontal Carousel
-              // ======================================================
+            ),
+            // ======================================================
+            // 🔴 [END] SECTION: Top Picks Horizontal Carousel
+            // ======================================================
 
-              const SizedBox(height: 32),
+            const SizedBox(height: 32),
 
-              // ======================================================
-              // 🔴 [START] BUTTON ROW: Book a Trip & Messages / AI Chat
-              // DESCRIPTION: Quick action buttons for booking and AI conversation.
-              // 🎓 TO HIDE THESE BUTTONS:
-              //    - Set AppConfig.enableBooking = false; to hide "Book a Trip"
-              //    - Set AppConfig.enableAiChat = false; to hide "Messages"
-              //    - Or comment out lines from [START] to [END] of this block.
-              // ======================================================
-              Row(
+            // ======================================================
+            // 🔴 [START] BUTTON ROW: Book a Trip & Messages / AI Chat
+            // DESCRIPTION: Quick action buttons for booking and AI conversation.
+            // 🎓 TO HIDE THESE BUTTONS:
+            //    - Set AppConfig.enableBooking = false; to hide "Book a Trip"
+            //    - Set AppConfig.enableAiChat = false; to hide "Messages"
+            //    - Or comment out lines from [START] to [END] of this block.
+            // ======================================================
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Row(
                 children: [
                   // Book a Trip Button
                   if (AppConfig.enableBooking)
@@ -211,19 +222,22 @@ class HomeScreen extends StatelessWidget {
                     ),
                 ],
               ),
-              // ======================================================
-              // 🔴 [END] BUTTON ROW: Book a Trip & Messages
-              // ======================================================
+            ),
+            // ======================================================
+            // 🔴 [END] BUTTON ROW: Book a Trip & Messages
+            // ======================================================
 
-              const SizedBox(height: 32),
+            const SizedBox(height: 32),
 
-              // ======================================================
-              // 🔴 [START] SECTION: Trips & Tours Horizontal Cards List
-              // DESCRIPTION: Cards list with "View All" link navigating to TripsScreen.
-              // 🎓 TO HIDE THIS SECTION:
-              //    Comment out lines from [START] to [END] of this block.
-              // ======================================================
-              Row(
+            // ======================================================
+            // 🔴 [START] SECTION: Trips & Tours Horizontal Cards List
+            // DESCRIPTION: Cards list with "View All" link navigating to TripsScreen.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Trips & Tours', style: Theme.of(context).textTheme.headlineMedium),
@@ -235,38 +249,42 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 200,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  clipBehavior: Clip.none,
-                  itemCount: DummyData.popularDestinations.length,
-                  itemBuilder: (context, index) {
-                    final dest = DummyData.popularDestinations[index];
-                    return DestinationCard(
-                      destination: dest,
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.destinationDetail, arguments: dest);
-                      },
-                      height: 200,
-                    );
-                  },
-                ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 200,
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                itemCount: DummyData.popularDestinations.length,
+                itemBuilder: (context, index) {
+                  final dest = DummyData.popularDestinations[index];
+                  return DestinationCard(
+                    destination: dest,
+                    onTap: () {
+                      Navigator.pushNamed(context, AppRoutes.destinationDetail, arguments: dest);
+                    },
+                    height: 200,
+                  );
+                },
               ),
-              // ======================================================
-              // 🔴 [END] SECTION: Trips & Tours Horizontal Cards List
-              // ======================================================
+            ),
+            // ======================================================
+            // 🔴 [END] SECTION: Trips & Tours Horizontal Cards List
+            // ======================================================
 
-              const SizedBox(height: 32),
+            const SizedBox(height: 32),
 
-              // ======================================================
-              // 🔴 [START] SECTION: Popular Destinations Large Cards
-              // DESCRIPTION: Full-width destination preview cards with price & rating.
-              // 🎓 TO HIDE THIS SECTION:
-              //    Comment out lines from [START] to [END] of this block.
-              // ======================================================
-              Row(
+            // ======================================================
+            // 🔴 [START] SECTION: Popular Destinations Large Cards
+            // DESCRIPTION: Full-width destination preview cards with price & rating.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Popular Destinations', style: Theme.of(context).textTheme.headlineMedium),
@@ -278,98 +296,103 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 320,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  clipBehavior: Clip.none,
-                  itemCount: DummyData.popularDestinations.length,
-                  itemBuilder: (context, index) {
-                    final dest = DummyData.popularDestinations[index];
-                    return DestinationCard(
-                      destination: dest,
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.destinationDetail, arguments: dest);
-                      },
-                    );
-                  },
-                ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 320,
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                itemCount: DummyData.popularDestinations.length,
+                itemBuilder: (context, index) {
+                  final dest = DummyData.popularDestinations[index];
+                  return DestinationCard(
+                    destination: dest,
+                    onTap: () {
+                      Navigator.pushNamed(context, AppRoutes.destinationDetail, arguments: dest);
+                    },
+                  );
+                },
               ),
-              // ======================================================
-              // 🔴 [END] SECTION: Popular Destinations Large Cards
-              // ======================================================
+            ),
+            // ======================================================
+            // 🔴 [END] SECTION: Popular Destinations Large Cards
+            // ======================================================
 
-              const SizedBox(height: 32),
+            const SizedBox(height: 32),
 
-              // ======================================================
-              // 🔴 [START] SECTION: Featured Collections
-              // DESCRIPTION: Category cards for scenic Pakistani regions.
-              // 🎓 TO HIDE THIS SECTION:
-              //    Comment out lines from [START] to [END] of this block.
-              // ======================================================
-              Text('Featured Collections', style: Theme.of(context).textTheme.headlineMedium),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 120,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  clipBehavior: Clip.none,
-                  itemCount: DummyData.featuredPlaces.length,
-                  itemBuilder: (context, index) {
-                    final place = DummyData.featuredPlaces[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.destinationDetail, arguments: place);
-                      },
-                      child: Container(
-                        width: 200,
-                        margin: const EdgeInsets.only(right: 16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              UnsplashImage(
-                                query: place['name']!,
-                                fallbackUrl: place['image'],
-                                fit: BoxFit.cover,
+            // ======================================================
+            // 🔴 [START] SECTION: Featured Collections
+            // DESCRIPTION: Category cards for scenic Pakistani regions.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Text('Featured Collections', style: Theme.of(context).textTheme.headlineMedium),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 120,
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                itemCount: DummyData.featuredPlaces.length,
+                itemBuilder: (context, index) {
+                  final place = DummyData.featuredPlaces[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, AppRoutes.destinationDetail, arguments: place);
+                    },
+                    child: Container(
+                      width: 200,
+                      margin: const EdgeInsets.only(right: 16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            UnsplashImage(
+                              query: place['name']!,
+                              fallbackUrl: place['image'],
+                              fit: BoxFit.cover,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: Colors.black.withValues(alpha: 0.3),
                               ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  color: Colors.black.withValues(alpha: 0.3),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    place['name']!,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1.2,
-                                    ),
+                              child: Center(
+                                child: Text(
+                                  place['name']!,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
-              // ======================================================
-              // 🔴 [END] SECTION: Featured Collections
-              // ======================================================
+            ),
+            // ======================================================
+            // 🔴 [END] SECTION: Featured Collections
+            // ======================================================
 
-              const SizedBox(height: 24),
-            ],
-          ),
+            const SizedBox(height: 24),
+          ],
         ),
       ),
     );

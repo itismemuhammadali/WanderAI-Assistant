@@ -36,8 +36,50 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
   LatLng _currentLocation = const LatLng(33.6844, 73.0479);
-  String _selectedRoute = 'fast'; // 'fast' or 'scenic'
+  String _selectedRoute = 'fast'; // 'fast', 'scenic', or 'scenic2'
   final bool _showAttractions = true;
+  String _currentDestinationName = 'Hunza Valley, Gilgit-Baltistan';
+  LatLng _destinationLocation = const LatLng(36.3167, 74.6667);
+
+  // Available destinations for Pakistan
+  final List<Map<String, dynamic>> _popularDestinations = const [
+    {
+      'name': 'Hunza Valley, Gilgit-Baltistan',
+      'location': LatLng(36.3167, 74.6667),
+      'tag': 'Mountain Paradise',
+      'distance': '580 km from Islamabad',
+    },
+    {
+      'name': 'Skardu & Deosai, Gilgit-Baltistan',
+      'location': LatLng(35.2971, 75.6333),
+      'tag': 'Land of Giants',
+      'distance': '640 km from Islamabad',
+    },
+    {
+      'name': 'Naran & Kaghan Valley, KP',
+      'location': LatLng(34.9085, 73.6528),
+      'tag': 'Lakes & Waterfalls',
+      'distance': '280 km from Islamabad',
+    },
+    {
+      'name': 'Swat & Kalam Valley, KP',
+      'location': LatLng(34.7717, 72.3602),
+      'tag': 'Switzerland of East',
+      'distance': '245 km from Islamabad',
+    },
+    {
+      'name': 'Murree & Galiyat, Punjab',
+      'location': LatLng(33.9070, 73.3943),
+      'tag': 'Pine Hills',
+      'distance': '65 km from Islamabad',
+    },
+    {
+      'name': 'Kumrat Valley, KP',
+      'location': LatLng(35.5398, 72.2152),
+      'tag': 'Deodar Forests',
+      'distance': '370 km from Islamabad',
+    },
+  ];
 
   // Polyline for Fastest Route (Islamabad to Hunza via KKH Direct)
   final List<LatLng> _fastestRoutePoints = const [
@@ -51,7 +93,7 @@ class _MapScreenState extends State<MapScreen> {
     LatLng(36.3167, 74.6667), // Hunza
   ];
 
-  // Polyline for Scenic Route (Islamabad to Hunza via Naran & Babusar Pass)
+  // Polyline for Scenic Route 1 (Islamabad to Hunza via Naran & Babusar Pass)
   final List<LatLng> _scenicRoutePoints = const [
     LatLng(33.6844, 73.0479), // Islamabad
     LatLng(34.1688, 73.2215), // Abbottabad
@@ -65,6 +107,21 @@ class _MapScreenState extends State<MapScreen> {
     LatLng(35.4206, 74.0967), // Chilas
     LatLng(35.9208, 74.3144), // Gilgit
     LatLng(36.3167, 74.6667), // Hunza (Karimabad)
+  ];
+
+  // Polyline for Scenic Route 2 (Islamabad to Hunza via Swat Valley & Shangla Pass)
+  final List<LatLng> _scenic2RoutePoints = const [
+    LatLng(33.6844, 73.0479), // Islamabad
+    LatLng(34.1989, 72.0404), // Mardan / Rashakai
+    LatLng(34.6542, 72.0306), // Chakdara & Malakand Pass
+    LatLng(34.7717, 72.3602), // Mingora & Swat River
+    LatLng(34.7994, 72.5714), // Malam Jabba Vista
+    LatLng(34.9000, 72.6500), // Shangla Pass (Alpuri)
+    LatLng(34.9272, 72.8767), // Besham Junction
+    LatLng(35.2917, 73.2144), // Dassu
+    LatLng(35.4206, 74.0967), // Chilas
+    LatLng(35.9208, 74.3144), // Gilgit
+    LatLng(36.3167, 74.6667), // Hunza
   ];
 
   @override
@@ -113,11 +170,217 @@ class _MapScreenState extends State<MapScreen> {
     _mapController.move(const LatLng(34.9085, 73.8500), 7.2);
   }
 
+  void _openDestinationSearchModal() {
+    final searchController = TextEditingController();
+    List<Map<String, dynamic>> filteredList = List.from(_popularDestinations);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModalState) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            top: 20,
+            left: 20,
+            right: 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Where are you traveling to?',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: searchController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Search city or scenic valley in Pakistan...',
+                  prefixIcon: const Icon(Icons.search, color: Color(0xFF0D9488)),
+                  suffixIcon: searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, size: 20),
+                          onPressed: () {
+                            searchController.clear();
+                            setModalState(() {
+                              filteredList = List.from(_popularDestinations);
+                            });
+                          },
+                        )
+                      : null,
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+                onChanged: (query) {
+                  setModalState(() {
+                    filteredList = _popularDestinations.where((d) {
+                      final name = (d['name'] as String).toLowerCase();
+                      final tag = (d['tag'] as String).toLowerCase();
+                      final q = query.toLowerCase();
+                      return name.contains(q) || tag.contains(q);
+                    }).toList();
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Popular Destinations & Scenic Hubs',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.4,
+                ),
+                child: filteredList.isEmpty
+                    ? const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 24),
+                        child: Center(
+                          child: Text(
+                            'No matching destinations found',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                      )
+                    : ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: filteredList.length,
+                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final dest = filteredList[index];
+                          final isSelected = dest['name'] == _currentDestinationName;
+                          return ListTile(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            leading: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? const Color(0xFF0D9488).withValues(alpha: 0.15)
+                                    : Colors.grey.shade100,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.location_on,
+                                color: isSelected ? const Color(0xFF0D9488) : Colors.grey.shade700,
+                              ),
+                            ),
+                            title: Text(
+                              dest['name'] as String,
+                              style: TextStyle(
+                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                                color: isSelected ? const Color(0xFF0D9488) : AppTheme.textPrimary,
+                              ),
+                            ),
+                            subtitle: Text(
+                              '${dest['tag']} • ${dest['distance']}',
+                              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                            ),
+                            trailing: isSelected
+                                ? const Icon(Icons.check_circle, color: Color(0xFF0D9488), size: 20)
+                                : null,
+                            onTap: () {
+                              Navigator.pop(ctx);
+                              setState(() {
+                                _currentDestinationName = dest['name'] as String;
+                                _destinationLocation = dest['location'] as LatLng;
+                              });
+                              _mapController.move(_destinationLocation, 9.0);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Destination set to $_currentDestinationName'),
+                                  backgroundColor: const Color(0xFF0D9488),
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Explore Map & Dual Routes',
+        titleWidget: GestureDetector(
+          onTap: _openDestinationSearchModal,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.location_on, color: Color(0xFF0D9488), size: 18),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _currentDestinationName,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        'Tap to search or change destination',
+                        style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 4),
+                const Icon(Icons.search, size: 18, color: Colors.grey),
+              ],
+            ),
+          ),
+        ),
         actions: [
           IconButton(
             tooltip: 'Center on Route',
@@ -147,24 +410,32 @@ class _MapScreenState extends State<MapScreen> {
                 urlTemplate: 'https://tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.example.travel_assistant',
               ),
-              // Dual Route Polyline Layer
+              // Multi Route Polyline Layer (Fastest, Scenic Babusar, Scenic Swat)
               PolylineLayer(
                 polylines: [
-                  // Scenic Route Polyline
+                  // Scenic Route 2 Polyline (Swat & Shangla Pass)
+                  Polyline(
+                    points: _scenic2RoutePoints,
+                    strokeWidth: _selectedRoute == 'scenic2' ? 5.5 : 2.5,
+                    color: _selectedRoute == 'scenic2'
+                        ? const Color(0xFF8B5CF6) // Vibrant Purple
+                        : Colors.purple.withValues(alpha: 0.3),
+                  ),
+                  // Scenic Route 1 Polyline (Naran & Babusar Pass)
                   Polyline(
                     points: _scenicRoutePoints,
-                    strokeWidth: _selectedRoute == 'scenic' ? 5.5 : 3.0,
+                    strokeWidth: _selectedRoute == 'scenic' ? 5.5 : 2.5,
                     color: _selectedRoute == 'scenic'
                         ? const Color(0xFFF59E0B) // Vibrant Amber
-                        : Colors.orange.withOpacity(0.35),
+                        : Colors.orange.withValues(alpha: 0.3),
                   ),
-                  // Fastest Route Polyline
+                  // Fastest Route Polyline (KKH Direct)
                   Polyline(
                     points: _fastestRoutePoints,
-                    strokeWidth: _selectedRoute == 'fast' ? 5.5 : 3.0,
+                    strokeWidth: _selectedRoute == 'fast' ? 5.5 : 2.5,
                     color: _selectedRoute == 'fast'
                         ? const Color(0xFF0D9488) // Vibrant Teal
-                        : Colors.teal.withOpacity(0.35),
+                        : Colors.teal.withValues(alpha: 0.3),
                   ),
                 ],
               ),
@@ -184,9 +455,9 @@ class _MapScreenState extends State<MapScreen> {
                       child: const Icon(Icons.trip_origin, color: Colors.white, size: 26),
                     ),
                   ),
-                  // Destination Marker (Hunza)
+                  // Dynamic Destination Marker
                   Marker(
-                    point: const LatLng(36.3167, 74.6667),
+                    point: _destinationLocation,
                     width: 48,
                     height: 48,
                     child: Container(
@@ -244,101 +515,142 @@ class _MapScreenState extends State<MapScreen> {
             ],
           ),
           // ======================================================
-          // 🔴 [START] COMPONENT: Route Toggle Bar at Top (Dual Routes)
-          // DESCRIPTION: Toggle buttons to switch between Fastest (KKH) and Scenic (Naran).
-          // 🎓 TEACHER SAYS: "Remove the route switcher toggle!"
-          //    METHOD 1: Set AppConfig.enableDualRoutes = false; in lib/core/app_config.dart
-          //    METHOD 2: Comment out lines from [START] to [END] of this block.
+          // 🔴 [START] COMPONENT: Route Toggle Bar at Top (Multiple Routes)
+          // DESCRIPTION: 3-way toggle buttons to switch between Fastest (KKH), Scenic (Babusar), and Scenic 2 (Swat).
           // ======================================================
           if (AppConfig.enableDualRoutes)
             Positioned(
-              top: 16,
-              left: 16,
-              right: 16,
+              top: 14,
+              left: 12,
+              right: 12,
               child: Container(
-                padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4)),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() => _selectedRoute = 'fast');
-                        _centerOnRoute();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          color: _selectedRoute == 'fast' ? const Color(0xFF0D9488) : Colors.transparent,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.speed,
-                              size: 18,
-                              color: _selectedRoute == 'fast' ? Colors.white : Colors.grey.shade700,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Fastest (11h 30m)',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                color: _selectedRoute == 'fast' ? Colors.white : Colors.grey.shade800,
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4)),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    // Fastest Option
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() => _selectedRoute = 'fast');
+                          _centerOnRoute();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: _selectedRoute == 'fast'
+                                ? const Color(0xFF0D9488)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.speed,
+                                size: 16,
+                                color: _selectedRoute == 'fast' ? Colors.white : Colors.grey.shade700,
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 2),
+                              Text(
+                                'Fastest',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                  color: _selectedRoute == 'fast' ? Colors.white : Colors.grey.shade800,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() => _selectedRoute = 'scenic');
-                        _centerOnRoute();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          color: _selectedRoute == 'scenic' ? const Color(0xFFF59E0B) : Colors.transparent,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.landscape,
-                              size: 18,
-                              color: _selectedRoute == 'scenic' ? Colors.white : Colors.grey.shade700,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Scenic (Babusar)',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                color: _selectedRoute == 'scenic' ? Colors.white : Colors.grey.shade800,
+                    const SizedBox(width: 4),
+                    // Scenic Babusar Option
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() => _selectedRoute = 'scenic');
+                          _centerOnRoute();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: _selectedRoute == 'scenic'
+                                ? const Color(0xFFF59E0B)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.landscape,
+                                size: 16,
+                                color: _selectedRoute == 'scenic' ? Colors.white : Colors.grey.shade700,
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 2),
+                              Text(
+                                'Scenic Babusar',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                  color: _selectedRoute == 'scenic' ? Colors.white : Colors.grey.shade800,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 4),
+                    // Scenic Swat Option
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() => _selectedRoute = 'scenic2');
+                          _centerOnRoute();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: _selectedRoute == 'scenic2'
+                                ? const Color(0xFF8B5CF6)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.forest,
+                                size: 16,
+                                color: _selectedRoute == 'scenic2' ? Colors.white : Colors.grey.shade700,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Scenic Swat',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                  color: _selectedRoute == 'scenic2' ? Colors.white : Colors.grey.shade800,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
           // ======================================================
           // 🔴 [END] COMPONENT: Route Toggle Bar at Top
           // ======================================================
@@ -346,8 +658,6 @@ class _MapScreenState extends State<MapScreen> {
           // ======================================================
           // 🔴 [START] CARD: Route Details Floating Bottom Card
           // DESCRIPTION: Bottom summary card showing duration, distance, and action buttons.
-          // 🎓 TO HIDE THIS CARD:
-          //    Comment out lines from [START] to [END] of this block.
           // ======================================================
           Positioned(
             bottom: 24,
@@ -381,15 +691,19 @@ class _MapScreenState extends State<MapScreen> {
                                     shape: BoxShape.circle,
                                     color: _selectedRoute == 'fast'
                                         ? const Color(0xFF0D9488)
-                                        : const Color(0xFFF59E0B),
+                                        : _selectedRoute == 'scenic'
+                                            ? const Color(0xFFF59E0B)
+                                            : const Color(0xFF8B5CF6),
                                   ),
                                 ),
                                 const SizedBox(width: 6),
                                 Expanded(
                                   child: Text(
                                     _selectedRoute == 'fast'
-                                        ? 'Fastest Motorway / KKH'
-                                        : 'Scenic Mountain Corridor',
+                                        ? 'Fastest Motorway & KKH'
+                                        : _selectedRoute == 'scenic'
+                                            ? 'Scenic Mountain Corridor'
+                                            : 'Scenic Swat & Shangla Pass',
                                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -399,8 +713,10 @@ class _MapScreenState extends State<MapScreen> {
                             const SizedBox(height: 4),
                             Text(
                               _selectedRoute == 'fast'
-                                  ? '580 km • 1 stop • Abbottabad & Besham'
-                                  : '640 km • 5 scenic stops • Naran & Babusar',
+                                  ? '580 km • 11h 30m • Abbottabad & Besham'
+                                  : _selectedRoute == 'scenic'
+                                      ? '640 km • 13h 00m • Naran & Babusar Pass'
+                                      : '695 km • 14h 30m • Mingora & Shangla Pass',
                               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -413,17 +729,25 @@ class _MapScreenState extends State<MapScreen> {
                         decoration: BoxDecoration(
                           color: _selectedRoute == 'fast'
                               ? const Color(0xFF0D9488).withValues(alpha: 0.1)
-                              : const Color(0xFFF59E0B).withValues(alpha: 0.1),
+                              : _selectedRoute == 'scenic'
+                                  ? const Color(0xFFF59E0B).withValues(alpha: 0.1)
+                                  : const Color(0xFF8B5CF6).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          _selectedRoute == 'fast' ? 'Optimal' : 'Scenic Picks',
+                          _selectedRoute == 'fast'
+                              ? 'Optimal'
+                              : _selectedRoute == 'scenic'
+                                  ? 'Alpine Lakes'
+                                  : 'Lush Valleys',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                             color: _selectedRoute == 'fast'
                                 ? const Color(0xFF0D9488)
-                                : const Color(0xFFF59E0B),
+                                : _selectedRoute == 'scenic'
+                                    ? const Color(0xFFF59E0B)
+                                    : const Color(0xFF8B5CF6),
                           ),
                         ),
                       ),

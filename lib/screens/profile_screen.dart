@@ -47,11 +47,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Dummy user data
+    // Traveler user data
     const String name = 'Muhammad Ali';
-    const String username = '@muhammadali';
     const String email = 'muhammadali@gmail.com';
-    const int age = 28;
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -64,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               // ======================================================
               // 🔴 [START] COMPONENT: User Profile Avatar & Camera Badge
               // DESCRIPTION: Circular user profile photo with camera icon overlay.
@@ -99,17 +97,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // ======================================================
               // 🔴 [START] COMPONENT: User Profile Info Details
-              // DESCRIPTION: Displays traveler name, handle, email, and age.
+              // DESCRIPTION: Displays traveler full name and email.
               // 🎓 TO HIDE THIS COMPONENT:
               //    Comment out lines from [START] to [END] of this block.
               // ======================================================
               Text(name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
-              Text(username, style: TextStyle(color: AppTheme.textSecondary)),
-              const SizedBox(height: 4),
-              Text(email, style: TextStyle(color: AppTheme.textSecondary)),
-              const SizedBox(height: 4),
-              Text('Age $age', style: TextStyle(color: AppTheme.textSecondary)),
+              Text(email, style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
               // ======================================================
               // 🔴 [END] COMPONENT: User Profile Info Details
               // ======================================================

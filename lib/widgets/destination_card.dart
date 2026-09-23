@@ -23,7 +23,7 @@ class DestinationCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: width,
+        width: isHorizontal ? width : double.infinity,
         height: height,
         margin: EdgeInsets.only(right: isHorizontal ? 16 : 0, bottom: isHorizontal ? 0 : 16),
         decoration: BoxDecoration(
