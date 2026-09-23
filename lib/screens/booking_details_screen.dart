@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/profile.dart';
+import '../core/booking_service.dart';
 import '../screens/booking_confirmation_screen.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
@@ -53,7 +54,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     }
   }
 
-  void _continue() {
+  void _continue() async {
     if (_formKey.currentState?.validate() ?? false) {
       final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       final bookingDetails = {
@@ -70,10 +71,16 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
         'pickupLocation': _pickupLocationController.text,
         'duration': _durationController.text,
       };
-      Navigator.push(context, MaterialPageRoute(
-        builder: (context) => const BookingConfirmationScreen(),
-        settings: RouteSettings(arguments: bookingDetails),
-      ));
+
+      // Persist booking into state & backend database
+      await BookingService.createBooking(bookingDetails);
+
+      if (mounted) {
+        Navigator.push(context, MaterialPageRoute(
+          builder: (context) => const BookingConfirmationScreen(),
+          settings: RouteSettings(arguments: bookingDetails),
+        ));
+      }
     }
   }
 

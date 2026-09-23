@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import 'pre_planned_trip_screen.dart';
 import 'chat_screen.dart';
+import 'trip_preferences_screen.dart';
 import '../core/saved_places_service.dart';
 import '../core/app_config.dart';
 import '../widgets/unsplash_image.dart';
@@ -287,25 +288,13 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
               ),
             if (AppConfig.enableBooking && AppConfig.enableAiChat) const SizedBox(width: 12),
 
-            // Customize / AI Chat Button
+            // Customize / Dual Option Button
             if (AppConfig.enableAiChat)
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: OutlinedButton(
-                    onPressed: () {
-                      final message =
-                          'I am interested in visiting ${_destination["name"]} in ${_destination["country"]}. Can you help me plan my trip?';
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChatScreen(
-                            initialMessage: message,
-                            destination: _destination,
-                          ),
-                        ),
-                      );
-                    },
+                    onPressed: () => _showCustomizeOptionsModal(context),
                     child: const Text('Customize'),
                   ),
                 ),
@@ -333,6 +322,162 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
           const SizedBox(width: 8),
           Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
+      ),
+    );
+  }
+
+  void _showCustomizeOptionsModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Customize Your Trip',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Choose how you would like to design your trip to ${_destination["name"]}:',
+              style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+            ),
+            const SizedBox(height: 20),
+            InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () {
+                Navigator.pop(ctx);
+                final message =
+                    'I am interested in visiting ${_destination["name"]} in ${_destination["country"]}. Can you help me plan my customized trip?';
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatScreen(
+                      initialMessage: message,
+                      destination: _destination,
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0D9488).withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFF0D9488).withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF0D9488),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.smart_toy, color: Colors.white, size: 24),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Plan with AI Assistant',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Chat interactively to design your perfect daily plan with recommendations',
+                            style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, color: Color(0xFF0D9488)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () {
+                Navigator.pop(ctx);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TripPreferencesScreen(),
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.tune, color: AppTheme.textPrimary, size: 24),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Customize Manually',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Set your preferred travel pace, hotel budget, and transport style directly',
+                            style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, color: Colors.grey),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
       ),
     );
   }

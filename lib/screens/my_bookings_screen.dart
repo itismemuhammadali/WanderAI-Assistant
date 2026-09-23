@@ -13,6 +13,7 @@
 
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
+import '../core/booking_service.dart';
 import '../widgets/custom_app_bar.dart';
 
 class MyBookingsScreen extends StatefulWidget {
@@ -23,41 +24,7 @@ class MyBookingsScreen extends StatefulWidget {
 }
 
 class _MyBookingsScreenState extends State<MyBookingsScreen> {
-  final List<Map<String, dynamic>> _bookings = [
-    {
-      'id': '1',
-      'destination': 'Hunza Valley',
-      'image': 'https://images.unsplash.com/photo-1631558288597-28d8ed273fec?q=80&w=1964&auto=format&fit=crop',
-      'startDate': '2024-05-15',
-      'endDate': '2024-05-18',
-      'status': 'confirmed',
-      'price': 45000,
-      'travelers': 2,
-      'bookingId': 'BK001',
-    },
-    {
-      'id': '2',
-      'destination': 'Skardu',
-      'image': 'https://images.unsplash.com/photo-1625807908993-a5ffbfbf3205?q=80&w=2070&auto=format&fit=crop',
-      'startDate': '2024-06-10',
-      'endDate': '2024-06-15',
-      'status': 'pending',
-      'price': 75000,
-      'travelers': 3,
-      'bookingId': 'BK002',
-    },
-    {
-      'id': '3',
-      'destination': 'Swat Valley',
-      'image': 'https://images.unsplash.com/photo-1627896157734-4bcdd61245ee?q=80&w=2070&auto=format&fit=crop',
-      'startDate': '2024-04-01',
-      'endDate': '2024-04-03',
-      'status': 'completed',
-      'price': 35000,
-      'travelers': 2,
-      'bookingId': 'BK003',
-    },
-  ];
+  List<Map<String, dynamic>> get _bookings => BookingService.bookings;
 
   @override
   Widget build(BuildContext context) {
@@ -68,20 +35,34 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
       ),
       body: _bookings.isEmpty
           ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.calendar_today, size: 64, color: AppTheme.textSecondary),
-                  const SizedBox(height: 16),
-                  Text('No bookings yet', style: Theme.of(context).textTheme.headlineSmall),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Start planning your next adventure!',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppTheme.textSecondary,
-                        ),
-                  ),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.calendar_today, size: 64, color: AppTheme.textSecondary),
+                    const SizedBox(height: 16),
+                    Text('No bookings yet', style: Theme.of(context).textTheme.headlineSmall),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Start planning your next adventure across Pakistan!',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.textSecondary,
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          BookingService.loadDemoData();
+                        });
+                      },
+                      icon: const Icon(Icons.download),
+                      label: const Text('Load Demo Bookings'),
+                    ),
+                  ],
+                ),
               ),
             )
           : ListView.builder(

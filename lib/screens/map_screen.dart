@@ -1,17 +1,11 @@
 // ============================================================================
 // SCREEN: Interactive Map Screen
 // FILE: lib/screens/map_screen.dart
-// PURPOSE: OpenStreetMap / FlutterMap view of Pakistan with real-time GPS location,
-//          dual route polylines (Fastest KKH vs Scenic Naran Babusar), attraction pins,
-//          and quick trip planning bottom sheet.
-//
-// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
-// 1. TEACHER: "Map Screen bottom bar se hata do!"
-//    - In lib/screens/main_shell.dart, comment out the Map item in navItems.
-// 2. TEACHER: "Fast vs Scenic route switcher hatao, sirf ek route dikhao!"
-//    - Set _selectedRoute = 'fast'; and comment out the route switcher toggle widget.
-// 3. TEACHER: "Map pins/markers change karo ya add karo!"
-//    - Look at _fastestRoutePoints (Line 46) or attractions list (Line 120).
+// PURPOSE: OpenStreetMap and FlutterMap view of Pakistan with real time GPS location,
+//          dynamic multi city routing across Pakistan (Lahore, Karachi, Islamabad,
+//          Multan, Vehari, Peshawar, Quetta, Hunza, Skardu, Swat, Naran, Gwadar),
+//          origin and destination search with quick swap, 3 dynamic route options,
+//          and route attraction POIs.
 // ============================================================================
 
 import 'package:flutter/material.dart';
@@ -23,7 +17,6 @@ import '../core/theme.dart';
 import '../core/dummy_data.dart';
 import '../core/app_routes.dart';
 import '../core/app_config.dart';
-import '../widgets/custom_app_bar.dart';
 import 'trip_preferences_screen.dart';
 
 class MapScreen extends StatefulWidget {
@@ -38,95 +31,183 @@ class _MapScreenState extends State<MapScreen> {
   LatLng _currentLocation = const LatLng(33.6844, 73.0479);
   String _selectedRoute = 'fast'; // 'fast', 'scenic', or 'scenic2'
   final bool _showAttractions = true;
-  String _currentDestinationName = 'Hunza Valley, Gilgit-Baltistan';
-  LatLng _destinationLocation = const LatLng(36.3167, 74.6667);
 
-  // Available destinations for Pakistan
-  final List<Map<String, dynamic>> _popularDestinations = const [
+  // Selected Origin and Destination
+  late Map<String, dynamic> _originCity;
+  late Map<String, dynamic> _destinationCity;
+
+  // Dynamic Route Points
+  List<LatLng> _fastestRoutePoints = [];
+  List<LatLng> _scenicRoutePoints = [];
+  List<LatLng> _altRoutePoints = [];
+
+  // Dynamic Route Stats
+  int _fastDistanceKm = 580;
+  String _fastDuration = '7h 15m';
+
+  int _scenicDistanceKm = 640;
+  String _scenicDuration = '9h 30m';
+
+  int _altDistanceKm = 690;
+  String _altDuration = '11h 00m';
+
+  // Comprehensive Pakistan Cities Catalog
+  static const List<Map<String, dynamic>> _pakistanCities = [
     {
-      'name': 'Hunza Valley, Gilgit-Baltistan',
-      'location': LatLng(36.3167, 74.6667),
-      'tag': 'Mountain Paradise',
-      'distance': '580 km from Islamabad',
+      'id': 'isb',
+      'name': 'Islamabad, Capital',
+      'shortName': 'Islamabad',
+      'location': LatLng(33.6844, 73.0479),
+      'tag': 'Federal Capital and Margalla Hills',
+      'province': 'Federal Capital',
     },
     {
-      'name': 'Skardu & Deosai, Gilgit-Baltistan',
-      'location': LatLng(35.2971, 75.6333),
-      'tag': 'Land of Giants',
-      'distance': '640 km from Islamabad',
+      'id': 'lhr',
+      'name': 'Lahore, Punjab',
+      'shortName': 'Lahore',
+      'location': LatLng(31.5204, 74.3587),
+      'tag': 'Heart of Pakistan and Mughal Heritage',
+      'province': 'Punjab',
     },
     {
-      'name': 'Naran & Kaghan Valley, KP',
-      'location': LatLng(34.9085, 73.6528),
-      'tag': 'Lakes & Waterfalls',
-      'distance': '280 km from Islamabad',
+      'id': 'khi',
+      'name': 'Karachi, Sindh',
+      'shortName': 'Karachi',
+      'location': LatLng(24.8607, 67.0011),
+      'tag': 'City of Lights and Arabian Sea Coast',
+      'province': 'Sindh',
     },
     {
-      'name': 'Swat & Kalam Valley, KP',
-      'location': LatLng(34.7717, 72.3602),
-      'tag': 'Switzerland of East',
-      'distance': '245 km from Islamabad',
+      'id': 'mul',
+      'name': 'Multan, Punjab',
+      'shortName': 'Multan',
+      'location': LatLng(30.1575, 71.5249),
+      'tag': 'City of Saints and Historic Shrines',
+      'province': 'Punjab',
     },
     {
-      'name': 'Murree & Galiyat, Punjab',
+      'id': 'veh',
+      'name': 'Vehari, Punjab',
+      'shortName': 'Vehari',
+      'location': LatLng(30.0452, 72.3489),
+      'tag': 'King of Cotton and Agricultural Heart',
+      'province': 'Punjab',
+    },
+    {
+      'id': 'fsd',
+      'name': 'Faisalabad, Punjab',
+      'shortName': 'Faisalabad',
+      'location': LatLng(31.4504, 73.1350),
+      'tag': 'Textile Hub and Clock Tower City',
+      'province': 'Punjab',
+    },
+    {
+      'id': 'pew',
+      'name': 'Peshawar, KP',
+      'shortName': 'Peshawar',
+      'location': LatLng(34.0151, 71.5249),
+      'tag': 'Historic Frontier Gate and Qissa Khwani',
+      'province': 'Khyber Pakhtunkhwa',
+    },
+    {
+      'id': 'que',
+      'name': 'Quetta, Balochistan',
+      'shortName': 'Quetta',
+      'location': LatLng(30.1798, 66.9750),
+      'tag': 'Fruit Garden of Pakistan and Chaman Pass',
+      'province': 'Balochistan',
+    },
+    {
+      'id': 'mre',
+      'name': 'Murree, Punjab',
+      'shortName': 'Murree',
       'location': LatLng(33.9070, 73.3943),
-      'tag': 'Pine Hills',
-      'distance': '65 km from Islamabad',
+      'tag': 'Queen of Hills and Pine Forests',
+      'province': 'Punjab',
     },
     {
-      'name': 'Kumrat Valley, KP',
-      'location': LatLng(35.5398, 72.2152),
-      'tag': 'Deodar Forests',
-      'distance': '370 km from Islamabad',
+      'id': 'nar',
+      'name': 'Naran and Kaghan, KP',
+      'shortName': 'Naran',
+      'location': LatLng(34.9085, 73.6528),
+      'tag': 'Alpine Lakes and Babusar Pass',
+      'province': 'Khyber Pakhtunkhwa',
     },
-  ];
-
-  // Polyline for Fastest Route (Islamabad to Hunza via KKH Direct)
-  final List<LatLng> _fastestRoutePoints = const [
-    LatLng(33.6844, 73.0479), // Islamabad
-    LatLng(34.1688, 73.2215), // Abbottabad
-    LatLng(34.3333, 73.2000), // Mansehra
-    LatLng(34.9272, 72.8767), // Besham
-    LatLng(35.2917, 73.2144), // Dassu
-    LatLng(35.4206, 74.0967), // Chilas
-    LatLng(35.9208, 74.3144), // Gilgit
-    LatLng(36.3167, 74.6667), // Hunza
-  ];
-
-  // Polyline for Scenic Route 1 (Islamabad to Hunza via Naran & Babusar Pass)
-  final List<LatLng> _scenicRoutePoints = const [
-    LatLng(33.6844, 73.0479), // Islamabad
-    LatLng(34.1688, 73.2215), // Abbottabad
-    LatLng(34.5497, 73.3544), // Balakot
-    LatLng(34.6292, 73.4739), // Shogran
-    LatLng(34.9085, 73.6528), // Naran
-    LatLng(34.8767, 73.6931), // Saif-ul-Malook Lake
-    LatLng(35.0333, 73.7833), // Batakundi
-    LatLng(35.0833, 73.9167), // Lulusar Lake & Waterfall
-    LatLng(35.1481, 74.0483), // Babusar Top Pass (4173m)
-    LatLng(35.4206, 74.0967), // Chilas
-    LatLng(35.9208, 74.3144), // Gilgit
-    LatLng(36.3167, 74.6667), // Hunza (Karimabad)
-  ];
-
-  // Polyline for Scenic Route 2 (Islamabad to Hunza via Swat Valley & Shangla Pass)
-  final List<LatLng> _scenic2RoutePoints = const [
-    LatLng(33.6844, 73.0479), // Islamabad
-    LatLng(34.1989, 72.0404), // Mardan / Rashakai
-    LatLng(34.6542, 72.0306), // Chakdara & Malakand Pass
-    LatLng(34.7717, 72.3602), // Mingora & Swat River
-    LatLng(34.7994, 72.5714), // Malam Jabba Vista
-    LatLng(34.9000, 72.6500), // Shangla Pass (Alpuri)
-    LatLng(34.9272, 72.8767), // Besham Junction
-    LatLng(35.2917, 73.2144), // Dassu
-    LatLng(35.4206, 74.0967), // Chilas
-    LatLng(35.9208, 74.3144), // Gilgit
-    LatLng(36.3167, 74.6667), // Hunza
+    {
+      'id': 'swt',
+      'name': 'Swat and Kalam, KP',
+      'shortName': 'Swat',
+      'location': LatLng(34.7717, 72.3602),
+      'tag': 'Switzerland of the East and River Swat',
+      'province': 'Khyber Pakhtunkhwa',
+    },
+    {
+      'id': 'hnz',
+      'name': 'Hunza Valley, Gilgit Baltistan',
+      'shortName': 'Hunza',
+      'location': LatLng(36.3167, 74.6667),
+      'tag': 'Attabad Lake and Rakaposhi View',
+      'province': 'Gilgit Baltistan',
+    },
+    {
+      'id': 'skd',
+      'name': 'Skardu and Deosai, Gilgit Baltistan',
+      'shortName': 'Skardu',
+      'location': LatLng(35.2971, 75.6333),
+      'tag': 'Gateway to K2 and Shangrila Lake',
+      'province': 'Gilgit Baltistan',
+    },
+    {
+      'id': 'gwd',
+      'name': 'Gwadar, Balochistan',
+      'shortName': 'Gwadar',
+      'location': LatLng(25.1264, 62.3225),
+      'tag': 'Deep Sea Port and Hammerhead Peninsula',
+      'province': 'Balochistan',
+    },
+    {
+      'id': 'hyd',
+      'name': 'Hyderabad, Sindh',
+      'shortName': 'Hyderabad',
+      'location': LatLng(25.3960, 68.3578),
+      'tag': 'Pacca Qilla and Indus Highway',
+      'province': 'Sindh',
+    },
+    {
+      'id': 'bwp',
+      'name': 'Bahawalpur, Punjab',
+      'shortName': 'Bahawalpur',
+      'location': LatLng(29.3544, 71.6911),
+      'tag': 'Noor Mahal and Cholistan Desert',
+      'province': 'Punjab',
+    },
+    {
+      'id': 'glt',
+      'name': 'Gilgit, Gilgit Baltistan',
+      'shortName': 'Gilgit',
+      'location': LatLng(35.9208, 74.3144),
+      'tag': 'Junction of Three Grand Mountain Ranges',
+      'province': 'Gilgit Baltistan',
+    },
+    {
+      'id': 'abb',
+      'name': 'Abbottabad, KP',
+      'shortName': 'Abbottabad',
+      'location': LatLng(34.1688, 73.2215),
+      'tag': 'Pines Foothills and Shimla Peak',
+      'province': 'Khyber Pakhtunkhwa',
+    },
   ];
 
   @override
   void initState() {
     super.initState();
+    _originCity = _pakistanCities[0]; // Islamabad
+    _destinationCity = _pakistanCities.firstWhere(
+      (c) => c['id'] == 'hnz',
+      orElse: () => _pakistanCities[11],
+    ); // Hunza
+    _recalculateRoutes();
     _initLocation();
   }
 
@@ -160,19 +241,186 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  void _centerOnLocation() {
-    if (_currentLocation != const LatLng(33.6844, 73.0479)) {
-      _mapController.move(_currentLocation, 12);
+  void _recalculateRoutes() {
+    final LatLng start = _originCity['location'] as LatLng;
+    final LatLng end = _destinationCity['location'] as LatLng;
+
+    // Direct haversine distance in km
+    final double straightDistance = Geolocator.distanceBetween(
+      start.latitude,
+      start.longitude,
+      end.latitude,
+      end.longitude,
+    ) / 1000.0;
+
+    // Calculate realistic road distances
+    _fastDistanceKm = (straightDistance * 1.18).round().clamp(15, 3200);
+    _scenicDistanceKm = (straightDistance * 1.32).round().clamp(20, 3600);
+    _altDistanceKm = (straightDistance * 1.45).round().clamp(25, 4000);
+
+    // Realistic travel times (motorway ~85km/h, scenic ~60km/h, alternative ~50km/h)
+    _fastDuration = _formatTravelDuration(_fastDistanceKm, 85.0);
+    _scenicDuration = _formatTravelDuration(_scenicDistanceKm, 60.0);
+    _altDuration = _formatTravelDuration(_altDistanceKm, 50.0);
+
+    // Check if matching Islamabad <-> Hunza for curated high detail polylines
+    final bool isIsbToHunza = (_originCity['id'] == 'isb' && _destinationCity['id'] == 'hnz') ||
+        (_originCity['id'] == 'hnz' && _destinationCity['id'] == 'isb');
+
+    if (isIsbToHunza) {
+      final List<LatLng> kkh = [
+        const LatLng(33.6844, 73.0479),
+        const LatLng(34.1688, 73.2215),
+        const LatLng(34.3333, 73.2000),
+        const LatLng(34.9272, 72.8767),
+        const LatLng(35.2917, 73.2144),
+        const LatLng(35.4206, 74.0967),
+        const LatLng(35.9208, 74.3144),
+        const LatLng(36.3167, 74.6667),
+      ];
+
+      final List<LatLng> babusar = [
+        const LatLng(33.6844, 73.0479),
+        const LatLng(34.1688, 73.2215),
+        const LatLng(34.5497, 73.3544),
+        const LatLng(34.6292, 73.4739),
+        const LatLng(34.9085, 73.6528),
+        const LatLng(34.8767, 73.6931),
+        const LatLng(35.0333, 73.7833),
+        const LatLng(35.0833, 73.9167),
+        const LatLng(35.1481, 74.0483),
+        const LatLng(35.4206, 74.0967),
+        const LatLng(35.9208, 74.3144),
+        const LatLng(36.3167, 74.6667),
+      ];
+
+      final List<LatLng> swatShangla = [
+        const LatLng(33.6844, 73.0479),
+        const LatLng(34.1989, 72.0404),
+        const LatLng(34.6542, 72.0306),
+        const LatLng(34.7717, 72.3602),
+        const LatLng(34.7994, 72.5714),
+        const LatLng(34.9000, 72.6500),
+        const LatLng(34.9272, 72.8767),
+        const LatLng(35.2917, 73.2144),
+        const LatLng(35.4206, 74.0967),
+        const LatLng(35.9208, 74.3144),
+        const LatLng(36.3167, 74.6667),
+      ];
+
+      if (_originCity['id'] == 'hnz') {
+        _fastestRoutePoints = kkh.reversed.toList();
+        _scenicRoutePoints = babusar.reversed.toList();
+        _altRoutePoints = swatShangla.reversed.toList();
+      } else {
+        _fastestRoutePoints = kkh;
+        _scenicRoutePoints = babusar;
+        _altRoutePoints = swatShangla;
+      }
+    } else {
+      // Dynamic Polyline Generator for any pair in Pakistan
+      _fastestRoutePoints = _generateDynamicPolyline(start, end, curvature: 0.04, segments: 7);
+      _scenicRoutePoints = _generateDynamicPolyline(start, end, curvature: 0.16, segments: 9);
+      _altRoutePoints = _generateDynamicPolyline(start, end, curvature: -0.14, segments: 8);
     }
   }
 
-  void _centerOnRoute() {
-    _mapController.move(const LatLng(34.9085, 73.8500), 7.2);
+  String _formatTravelDuration(int distanceKm, double avgSpeedKmH) {
+    final double totalHours = distanceKm / avgSpeedKmH;
+    final int hours = totalHours.floor();
+    final int minutes = ((totalHours - hours) * 60).round();
+    if (hours == 0) {
+      return '$minutes min';
+    }
+    return '${hours}h ${minutes.toString().padLeft(2, '0')}m';
   }
 
-  void _openDestinationSearchModal() {
+  List<LatLng> _generateDynamicPolyline(
+    LatLng p1,
+    LatLng p2, {
+    required double curvature,
+    required int segments,
+  }) {
+    final List<LatLng> points = [];
+    final double dLat = p2.latitude - p1.latitude;
+    final double dLng = p2.longitude - p1.longitude;
+
+    // Perpendicular vector for natural geographic curve
+    final double perpLat = -dLng;
+    final double perpLng = dLat;
+
+    for (int i = 0; i <= segments; i++) {
+      final double t = i / segments;
+      // Parabolic curvature factor
+      final double curveFactor = 4.0 * t * (1.0 - t) * curvature;
+
+      final double baseLat = p1.latitude + dLat * t;
+      final double baseLng = p1.longitude + dLng * t;
+
+      final double pointLat = baseLat + perpLat * curveFactor;
+      final double pointLng = baseLng + perpLng * curveFactor;
+
+      points.add(LatLng(pointLat, pointLng));
+    }
+    return points;
+  }
+
+  void _centerOnLocation() {
+    _mapController.move(_currentLocation, 12);
+  }
+
+  void _centerOnRoute() {
+    final LatLng start = _originCity['location'] as LatLng;
+    final LatLng end = _destinationCity['location'] as LatLng;
+
+    final LatLng center = LatLng(
+      (start.latitude + end.latitude) / 2,
+      (start.longitude + end.longitude) / 2,
+    );
+
+    final double distanceKm = Geolocator.distanceBetween(
+      start.latitude,
+      start.longitude,
+      end.latitude,
+      end.longitude,
+    ) / 1000.0;
+
+    double zoom = 7.0;
+    if (distanceKm < 80) {
+      zoom = 10.0;
+    } else if (distanceKm < 200) {
+      zoom = 8.5;
+    } else if (distanceKm < 500) {
+      zoom = 7.2;
+    } else if (distanceKm < 900) {
+      zoom = 6.2;
+    } else {
+      zoom = 5.2;
+    }
+
+    _mapController.move(center, zoom);
+  }
+
+  void _swapOriginAndDestination() {
+    setState(() {
+      final temp = _originCity;
+      _originCity = _destinationCity;
+      _destinationCity = temp;
+      _recalculateRoutes();
+    });
+    _centerOnRoute();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Swapped: ${_originCity['shortName']} to ${_destinationCity['shortName']}'),
+        backgroundColor: const Color(0xFF0D9488),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _openCitySearchModal({required bool isSelectingOrigin}) {
     final searchController = TextEditingController();
-    List<Map<String, dynamic>> filteredList = List.from(_popularDestinations);
+    List<Map<String, dynamic>> filteredList = List.from(_pakistanCities);
 
     showModalBottomSheet(
       context: context,
@@ -203,9 +451,9 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Where are you traveling to?',
-                style: TextStyle(
+              Text(
+                isSelectingOrigin ? 'Select Starting City in Pakistan' : 'Select Destination City in Pakistan',
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppTheme.textPrimary,
@@ -216,15 +464,18 @@ class _MapScreenState extends State<MapScreen> {
                 controller: searchController,
                 autofocus: true,
                 decoration: InputDecoration(
-                  hintText: 'Search city or scenic valley in Pakistan...',
-                  prefixIcon: const Icon(Icons.search, color: Color(0xFF0D9488)),
+                  hintText: 'Search city, valley, or province in Pakistan...',
+                  prefixIcon: Icon(
+                    isSelectingOrigin ? Icons.trip_origin : Icons.location_on,
+                    color: isSelectingOrigin ? Colors.green : const Color(0xFF0D9488),
+                  ),
                   suffixIcon: searchController.text.isNotEmpty
                       ? IconButton(
                           icon: const Icon(Icons.clear, size: 20),
                           onPressed: () {
                             searchController.clear();
                             setModalState(() {
-                              filteredList = List.from(_popularDestinations);
+                              filteredList = List.from(_pakistanCities);
                             });
                           },
                         )
@@ -239,18 +490,19 @@ class _MapScreenState extends State<MapScreen> {
                 ),
                 onChanged: (query) {
                   setModalState(() {
-                    filteredList = _popularDestinations.where((d) {
-                      final name = (d['name'] as String).toLowerCase();
-                      final tag = (d['tag'] as String).toLowerCase();
+                    filteredList = _pakistanCities.where((c) {
+                      final name = (c['name'] as String).toLowerCase();
+                      final tag = (c['tag'] as String).toLowerCase();
+                      final prov = (c['province'] as String).toLowerCase();
                       final q = query.toLowerCase();
-                      return name.contains(q) || tag.contains(q);
+                      return name.contains(q) || tag.contains(q) || prov.contains(q);
                     }).toList();
                   });
                 },
               ),
               const SizedBox(height: 16),
               const Text(
-                'Popular Destinations & Scenic Hubs',
+                'Available Cities and Scenic Valleys',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -260,14 +512,14 @@ class _MapScreenState extends State<MapScreen> {
               const SizedBox(height: 8),
               ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.4,
+                  maxHeight: MediaQuery.of(context).size.height * 0.45,
                 ),
                 child: filteredList.isEmpty
                     ? const Padding(
                         padding: EdgeInsets.symmetric(vertical: 24),
                         child: Center(
                           child: Text(
-                            'No matching destinations found',
+                            'No matching cities found in Pakistan',
                             style: TextStyle(color: Colors.grey),
                           ),
                         ),
@@ -275,50 +527,65 @@ class _MapScreenState extends State<MapScreen> {
                     : ListView.separated(
                         shrinkWrap: true,
                         itemCount: filteredList.length,
-                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        separatorBuilder: (context, index) => const Divider(height: 1),
                         itemBuilder: (context, index) {
-                          final dest = filteredList[index];
-                          final isSelected = dest['name'] == _currentDestinationName;
+                          final city = filteredList[index];
+                          final isCurrentlySelected = isSelectingOrigin
+                              ? city['id'] == _originCity['id']
+                              : city['id'] == _destinationCity['id'];
+
                           return ListTile(
                             contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             leading: Container(
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: isSelected
-                                    ? const Color(0xFF0D9488).withValues(alpha: 0.15)
+                                color: isCurrentlySelected
+                                    ? (isSelectingOrigin ? Colors.green.shade50 : const Color(0xFF0D9488).withValues(alpha: 0.15))
                                     : Colors.grey.shade100,
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
-                                Icons.location_on,
-                                color: isSelected ? const Color(0xFF0D9488) : Colors.grey.shade700,
+                                isSelectingOrigin ? Icons.trip_origin : Icons.location_on,
+                                color: isCurrentlySelected
+                                    ? (isSelectingOrigin ? Colors.green : const Color(0xFF0D9488))
+                                    : Colors.grey.shade700,
                               ),
                             ),
                             title: Text(
-                              dest['name'] as String,
+                              city['name'] as String,
                               style: TextStyle(
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                                color: isSelected ? const Color(0xFF0D9488) : AppTheme.textPrimary,
+                                fontWeight: isCurrentlySelected ? FontWeight.bold : FontWeight.w600,
+                                color: isCurrentlySelected
+                                    ? (isSelectingOrigin ? Colors.green.shade800 : const Color(0xFF0D9488))
+                                    : AppTheme.textPrimary,
                               ),
                             ),
                             subtitle: Text(
-                              '${dest['tag']} • ${dest['distance']}',
+                              '${city['province']} • ${city['tag']}',
                               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                             ),
-                            trailing: isSelected
+                            trailing: isCurrentlySelected
                                 ? const Icon(Icons.check_circle, color: Color(0xFF0D9488), size: 20)
                                 : null,
                             onTap: () {
                               Navigator.pop(ctx);
                               setState(() {
-                                _currentDestinationName = dest['name'] as String;
-                                _destinationLocation = dest['location'] as LatLng;
+                                if (isSelectingOrigin) {
+                                  _originCity = city;
+                                } else {
+                                  _destinationCity = city;
+                                }
+                                _recalculateRoutes();
                               });
-                              _mapController.move(_destinationLocation, 9.0);
+                              _centerOnRoute();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Destination set to $_currentDestinationName'),
+                                  content: Text(
+                                    isSelectingOrigin
+                                        ? 'Origin updated to ${city['shortName']}'
+                                        : 'Destination set to ${city['shortName']}',
+                                  ),
                                   backgroundColor: const Color(0xFF0D9488),
                                   duration: const Duration(seconds: 2),
                                 ),
@@ -339,57 +606,98 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        titleWidget: GestureDetector(
-          onTap: _openDestinationSearchModal,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.location_on, color: Color(0xFF0D9488), size: 18),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _currentDestinationName,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0.5,
+        titleSpacing: 12,
+        title: Row(
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Origin Selector Pill
+                  GestureDetector(
+                    onTap: () => _openCitySearchModal(isSelectingOrigin: true),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade50,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.green.shade200),
                       ),
-                      Text(
-                        'Tap to search or change destination',
-                        style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.trip_origin, color: Colors.green, size: 14),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              'From: ${_originCity['name']}',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green.shade900,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const Icon(Icons.arrow_drop_down, size: 18, color: Colors.green),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 4),
-                const Icon(Icons.search, size: 18, color: Colors.grey),
-              ],
+                  const SizedBox(height: 4),
+                  // Destination Selector Pill
+                  GestureDetector(
+                    onTap: () => _openCitySearchModal(isSelectingOrigin: false),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0D9488).withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color(0xFF0D9488).withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.location_on, color: Color(0xFF0D9488), size: 14),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              'To: ${_destinationCity['name']}',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF0F766E),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const Icon(Icons.arrow_drop_down, size: 18, color: Color(0xFF0D9488)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+            const SizedBox(width: 6),
+            // Quick Swap Button
+            IconButton(
+              tooltip: 'Swap Origin and Destination',
+              icon: const Icon(Icons.swap_vert, color: Color(0xFF0D9488)),
+              onPressed: _swapOriginAndDestination,
+            ),
+          ],
         ),
         actions: [
           IconButton(
-            tooltip: 'Center on Route',
-            icon: const Icon(Icons.alt_route),
+            tooltip: 'Fit Route in View',
+            icon: const Icon(Icons.alt_route, color: AppTheme.textPrimary),
             onPressed: _centerOnRoute,
           ),
           IconButton(
             tooltip: 'My Location',
-            icon: const Icon(Icons.my_location),
+            icon: const Icon(Icons.my_location, color: AppTheme.textPrimary),
             onPressed: _centerOnLocation,
           ),
         ],
@@ -399,10 +707,10 @@ class _MapScreenState extends State<MapScreen> {
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter: const LatLng(34.8000, 73.7000),
-              initialZoom: 7,
+              initialCenter: const LatLng(32.5, 73.5),
+              initialZoom: 6.8,
               onMapReady: () {
-                debugPrint('Map is ready');
+                _centerOnRoute();
               },
             ),
             children: [
@@ -410,40 +718,43 @@ class _MapScreenState extends State<MapScreen> {
                 urlTemplate: 'https://tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.example.travel_assistant',
               ),
-              // Multi Route Polyline Layer (Fastest, Scenic Babusar, Scenic Swat)
+              // Multi Route Polyline Layer (Fastest, Scenic, Alternative)
               PolylineLayer(
                 polylines: [
-                  // Scenic Route 2 Polyline (Swat & Shangla Pass)
-                  Polyline(
-                    points: _scenic2RoutePoints,
-                    strokeWidth: _selectedRoute == 'scenic2' ? 5.5 : 2.5,
-                    color: _selectedRoute == 'scenic2'
-                        ? const Color(0xFF8B5CF6) // Vibrant Purple
-                        : Colors.purple.withValues(alpha: 0.3),
-                  ),
-                  // Scenic Route 1 Polyline (Naran & Babusar Pass)
-                  Polyline(
-                    points: _scenicRoutePoints,
-                    strokeWidth: _selectedRoute == 'scenic' ? 5.5 : 2.5,
-                    color: _selectedRoute == 'scenic'
-                        ? const Color(0xFFF59E0B) // Vibrant Amber
-                        : Colors.orange.withValues(alpha: 0.3),
-                  ),
-                  // Fastest Route Polyline (KKH Direct)
-                  Polyline(
-                    points: _fastestRoutePoints,
-                    strokeWidth: _selectedRoute == 'fast' ? 5.5 : 2.5,
-                    color: _selectedRoute == 'fast'
-                        ? const Color(0xFF0D9488) // Vibrant Teal
-                        : Colors.teal.withValues(alpha: 0.3),
-                  ),
+                  // Alternative Route Polyline
+                  if (_altRoutePoints.isNotEmpty)
+                    Polyline(
+                      points: _altRoutePoints,
+                      strokeWidth: _selectedRoute == 'scenic2' ? 5.5 : 2.5,
+                      color: _selectedRoute == 'scenic2'
+                          ? const Color(0xFF8B5CF6) // Vibrant Purple
+                          : Colors.purple.withValues(alpha: 0.3),
+                    ),
+                  // Scenic Route Polyline
+                  if (_scenicRoutePoints.isNotEmpty)
+                    Polyline(
+                      points: _scenicRoutePoints,
+                      strokeWidth: _selectedRoute == 'scenic' ? 5.5 : 2.5,
+                      color: _selectedRoute == 'scenic'
+                          ? const Color(0xFFF59E0B) // Vibrant Amber
+                          : Colors.orange.withValues(alpha: 0.3),
+                    ),
+                  // Fastest Motorway Route Polyline
+                  if (_fastestRoutePoints.isNotEmpty)
+                    Polyline(
+                      points: _fastestRoutePoints,
+                      strokeWidth: _selectedRoute == 'fast' ? 5.5 : 2.5,
+                      color: _selectedRoute == 'fast'
+                          ? const Color(0xFF0D9488) // Vibrant Teal
+                          : Colors.teal.withValues(alpha: 0.3),
+                    ),
                 ],
               ),
               MarkerLayer(
                 markers: [
-                  // Origin Marker (Islamabad)
+                  // Origin Marker
                   Marker(
-                    point: const LatLng(33.6844, 73.0479),
+                    point: _originCity['location'] as LatLng,
                     width: 44,
                     height: 44,
                     child: Container(
@@ -452,12 +763,12 @@ class _MapScreenState extends State<MapScreen> {
                         shape: BoxShape.circle,
                         boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
                       ),
-                      child: const Icon(Icons.trip_origin, color: Colors.white, size: 26),
+                      child: const Icon(Icons.trip_origin, color: Colors.white, size: 24),
                     ),
                   ),
                   // Dynamic Destination Marker
                   Marker(
-                    point: _destinationLocation,
+                    point: _destinationCity['location'] as LatLng,
                     width: 48,
                     height: 48,
                     child: Container(
@@ -469,7 +780,7 @@ class _MapScreenState extends State<MapScreen> {
                       child: const Icon(Icons.flag, color: Colors.white, size: 28),
                     ),
                   ),
-                  // Corridor Attractions Markers (Waterfalls, Lakes, Passes, Forts)
+                  // Corridor Attractions Markers
                   if (_showAttractions)
                     ...DummyData.routeAttractions.map((att) {
                       final lat = att['latitude'] as double? ?? 34.9085;
@@ -481,13 +792,13 @@ class _MapScreenState extends State<MapScreen> {
 
                       if (cat.contains('lake') || cat.contains('waterfall')) {
                         iconData = Icons.water;
-                        pinColor = const Color(0xFF0284C7); // Sky blue
+                        pinColor = const Color(0xFF0284C7);
                       } else if (cat.contains('pass') || cat.contains('mountain')) {
                         iconData = Icons.landscape;
-                        pinColor = const Color(0xFFD97706); // Amber
+                        pinColor = const Color(0xFFD97706);
                       } else if (cat.contains('fort') || cat.contains('heritage')) {
                         iconData = Icons.castle;
-                        pinColor = const Color(0xFF7C3AED); // Purple
+                        pinColor = const Color(0xFF7C3AED);
                       }
 
                       return Marker(
@@ -514,10 +825,7 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ],
           ),
-          // ======================================================
-          // 🔴 [START] COMPONENT: Route Toggle Bar at Top (Multiple Routes)
-          // DESCRIPTION: 3-way toggle buttons to switch between Fastest (KKH), Scenic (Babusar), and Scenic 2 (Swat).
-          // ======================================================
+          // Route Toggle Bar at Top
           if (AppConfig.enableDualRoutes)
             Positioned(
               top: 14,
@@ -572,7 +880,7 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    // Scenic Babusar Option
+                    // Scenic Option
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
@@ -597,7 +905,7 @@ class _MapScreenState extends State<MapScreen> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Scenic Babusar',
+                                'Scenic Vista',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 11,
@@ -610,7 +918,7 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    // Scenic Swat Option
+                    // Alternative Bypass Option
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
@@ -629,13 +937,13 @@ class _MapScreenState extends State<MapScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.forest,
+                                Icons.alt_route,
                                 size: 16,
                                 color: _selectedRoute == 'scenic2' ? Colors.white : Colors.grey.shade700,
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Scenic Swat',
+                                'Alternative',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 11,
@@ -651,14 +959,8 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ),
             ),
-          // ======================================================
-          // 🔴 [END] COMPONENT: Route Toggle Bar at Top
-          // ======================================================
 
-          // ======================================================
-          // 🔴 [START] CARD: Route Details Floating Bottom Card
-          // DESCRIPTION: Bottom summary card showing duration, distance, and action buttons.
-          // ======================================================
+          // Route Details Floating Bottom Card
           Positioned(
             bottom: 24,
             left: 16,
@@ -700,10 +1002,10 @@ class _MapScreenState extends State<MapScreen> {
                                 Expanded(
                                   child: Text(
                                     _selectedRoute == 'fast'
-                                        ? 'Fastest Motorway & KKH'
+                                        ? 'Fastest Motorway Route'
                                         : _selectedRoute == 'scenic'
-                                            ? 'Scenic Mountain Corridor'
-                                            : 'Scenic Swat & Shangla Pass',
+                                            ? 'Scenic Corridor and Landscapes'
+                                            : 'Alternative Regional Highway',
                                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -713,10 +1015,10 @@ class _MapScreenState extends State<MapScreen> {
                             const SizedBox(height: 4),
                             Text(
                               _selectedRoute == 'fast'
-                                  ? '580 km • 11h 30m • Abbottabad & Besham'
+                                  ? '$_fastDistanceKm km • $_fastDuration • Optimal Express Highways'
                                   : _selectedRoute == 'scenic'
-                                      ? '640 km • 13h 00m • Naran & Babusar Pass'
-                                      : '695 km • 14h 30m • Mingora & Shangla Pass',
+                                      ? '$_scenicDistanceKm km • $_scenicDuration • Scenic Mountain and River Corridor'
+                                      : '$_altDistanceKm km • $_altDuration • Heritage and Regional Bypass',
                               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -738,8 +1040,8 @@ class _MapScreenState extends State<MapScreen> {
                           _selectedRoute == 'fast'
                               ? 'Optimal'
                               : _selectedRoute == 'scenic'
-                                  ? 'Alpine Lakes'
-                                  : 'Lush Valleys',
+                                  ? 'Scenic View'
+                                  : 'Regional',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -784,9 +1086,6 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ),
-          // ======================================================
-          // 🔴 [END] CARD: Route Details Floating Bottom Card
-          // ======================================================
         ],
       ),
     );
@@ -813,7 +1112,7 @@ class _MapScreenState extends State<MapScreen> {
                     width: 85,
                     height: 85,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorBuilder: (context, error, stackTrace) => Container(
                       width: 85,
                       height: 85,
                       color: Colors.grey.shade200,
@@ -829,7 +1128,7 @@ class _MapScreenState extends State<MapScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: AppTheme.accentTeal.withOpacity(0.15),
+                          color: AppTheme.accentTeal.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(

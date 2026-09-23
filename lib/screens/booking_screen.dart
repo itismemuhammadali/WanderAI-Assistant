@@ -25,6 +25,7 @@ class BookingScreen extends StatefulWidget {
 }
 
 class _BookingScreenState extends State<BookingScreen> {
+  final TextEditingController _searchController = TextEditingController();
   String? _selectedDestination;
   String _tripType = 'solo';
   int _travelers = 2;
@@ -36,12 +37,22 @@ class _BookingScreenState extends State<BookingScreen> {
   String _duration = 'all';
   String _rating = 'all';
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   final List<String> _tripTypes = ['solo', 'couple', 'family', 'group'];
   final List<String> _travelModes = ['car', 'bus', 'flight'];
   final List<String> _accommodations = ['hotel', 'resort', 'cottage', 'camping'];
 
+  List<Map<String, dynamic>> get _allDestinations {
+    return [...DummyData.popularDestinations, ...DummyData.featuredPlaces];
+  }
+
   List<Map<String, dynamic>> get _filteredDestinations {
-    List<Map<String, dynamic>> dests = [...DummyData.popularDestinations, ...DummyData.featuredPlaces];
+    List<Map<String, dynamic>> dests = _allDestinations;
     if (_region != 'all') {
       dests = dests.where((d) => d['region'] == _region).toList();
     }
@@ -55,6 +66,186 @@ class _BookingScreenState extends State<BookingScreen> {
       }).toList();
     }
     return dests;
+  }
+
+  void _openFilters() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (context, scrollController) => FiltersScreen(
+          currentFilters: {
+            'region': _region,
+            'duration': _duration,
+            'activities': _selectedActivities,
+            'rating': _rating,
+          },
+          onApply: (filters) {
+            setState(() {
+              _region = filters['region'] ?? 'all';
+              _duration = filters['duration'] ?? 'all';
+              _selectedActivities = List<String>.from(filters['activities'] ?? []);
+              _rating = filters['rating'] ?? 'all';
+            });
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
+  }
+
+  void _openAllDestinationsModal() {
+    final modalSearchController = TextEditingController();
+    List<Map<String, dynamic>> modalList = List.from(_allDestinations);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModalState) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            top: 20,
+            left: 20,
+            right: 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'All Destinations',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  Text(
+                    '${modalList.length} places',
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: modalSearchController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Search city or valley in Pakistan...',
+                  prefixIcon: const Icon(Icons.search, color: Color(0xFF0D9488)),
+                  suffixIcon: modalSearchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, size: 20),
+                          onPressed: () {
+                            modalSearchController.clear();
+                            setModalState(() {
+                              modalList = List.from(_allDestinations);
+                            });
+                          },
+                        )
+                      : null,
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+                onChanged: (q) {
+                  setModalState(() {
+                    modalList = _allDestinations.where((d) {
+                      final name = d['name'].toString().toLowerCase();
+                      final query = q.toLowerCase();
+                      return name.contains(query);
+                    }).toList();
+                  });
+                },
+              ),
+              const SizedBox(height: 12),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.5,
+                ),
+                child: modalList.isEmpty
+                    ? const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 32),
+                        child: Center(
+                          child: Text('No destinations match your search', style: TextStyle(color: Colors.grey)),
+                        ),
+                      )
+                    : ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: modalList.length,
+                        separatorBuilder: (context, index) => const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final dest = modalList[index];
+                          final isSelected = _selectedDestination == dest['id'];
+                          return ListTile(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                dest['image'] ?? '',
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => Container(
+                                  width: 50,
+                                  height: 50,
+                                  color: Colors.grey.shade200,
+                                  child: const Icon(Icons.landscape, color: Colors.teal),
+                                ),
+                              ),
+                            ),
+                            title: Text(
+                              dest['name'] ?? '',
+                              style: TextStyle(
+                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                                color: isSelected ? const Color(0xFF0D9488) : AppTheme.textPrimary,
+                              ),
+                            ),
+                            subtitle: Text(
+                              '${dest['distance'] ?? 'Tour'} • PKR ${dest['price'] ?? 45000}',
+                              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                            ),
+                            trailing: isSelected
+                                ? const Icon(Icons.check_circle, color: Color(0xFF0D9488))
+                                : null,
+                            onTap: () {
+                              Navigator.pop(ctx);
+                              setState(() {
+                                _selectedDestination = dest['id'];
+                              });
+                            },
+                          );
+                        },
+                      ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -74,58 +265,47 @@ class _BookingScreenState extends State<BookingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ======================================================
-                  // 🔴 [START] INPUT: Search Bar & Filters Modal Opener
-                  // DESCRIPTION: Search field that also opens the Filters modal bottom sheet.
-                  // 🎓 TO HIDE THIS COMPONENT:
-                  //    Comment out lines from [START] to [END] of this block.
+                  // 🔴 [START] INPUT: Interactive Search Bar & Filters
+                  // DESCRIPTION: Active text search with dedicated filter button.
                   // ======================================================
-                  GestureDetector(
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (context) => DraggableScrollableSheet(
-                          initialChildSize: 0.9,
-                          minChildSize: 0.5,
-                          maxChildSize: 0.95,
-                          expand: false,
-                          builder: (context, scrollController) => FiltersScreen(
-                            currentFilters: {
-                              'region': _region,
-                              'duration': _duration,
-                              'activities': _selectedActivities,
-                              'rating': _rating,
-                            },
-                            onApply: (filters) {
-                              setState(() {
-                                _region = filters['region'] ?? 'all';
-                                _duration = filters['duration'] ?? 'all';
-                                _selectedActivities = List<String>.from(filters['activities'] ?? []);
-                                _rating = filters['rating'] ?? 'all';
-                              });
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      );
+                  TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                      });
                     },
-                    child: TextField(
-                      enabled: false,
-                      decoration: InputDecoration(
-                        hintText: 'Search destinations...',
-                        prefixIcon: const Icon(Icons.search),
-                        suffixIcon: const Icon(Icons.tune),
-                        filled: true,
-                        fillColor: AppTheme.surface,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
+                    decoration: InputDecoration(
+                      hintText: 'Search destinations...',
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_searchQuery.isNotEmpty)
+                            IconButton(
+                              icon: const Icon(Icons.clear, size: 20),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _searchQuery = '');
+                              },
+                            ),
+                          IconButton(
+                            icon: const Icon(Icons.tune),
+                            tooltip: 'Filters',
+                            onPressed: _openFilters,
+                          ),
+                        ],
+                      ),
+                      filled: true,
+                      fillColor: AppTheme.surface,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
                       ),
                     ),
                   ),
                   // ======================================================
-                  // 🔴 [END] INPUT: Search Bar & Filters Modal Opener
+                  // 🔴 [END] INPUT: Interactive Search Bar & Filters
                   // ======================================================
                 ],
               ),
@@ -137,13 +317,37 @@ class _BookingScreenState extends State<BookingScreen> {
                 children: [
                   // ======================================================
                   // 🔴 [START] SECTION: Destination Selection Tiles
-                  // DESCRIPTION: List of Pakistani destinations user can pick from.
-                  // 🎓 TO HIDE THIS SECTION:
-                  //    Comment out lines from [START] to [END] of this block.
+                  // DESCRIPTION: Top 4 destinations with "View All" modal launcher.
                   // ======================================================
-                  Text('Select Destination', style: Theme.of(context).textTheme.headlineMedium),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Select Destination', style: Theme.of(context).textTheme.headlineMedium),
+                      TextButton(
+                        onPressed: _openAllDestinationsModal,
+                        child: const Text(
+                          'View All',
+                          style: TextStyle(
+                            color: AppTheme.accentTeal,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 16),
-                  ..._filteredDestinations.map((dest) => _buildDestinationTile(dest)),
+                  if (_filteredDestinations.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: Center(
+                        child: Text(
+                          'No destinations found for "$_searchQuery"',
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                    )
+                  else
+                    ..._filteredDestinations.take(4).map((dest) => _buildDestinationTile(dest)),
                   // ======================================================
                   // 🔴 [END] SECTION: Destination Selection Tiles
                   // ======================================================
