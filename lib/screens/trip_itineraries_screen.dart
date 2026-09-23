@@ -125,6 +125,13 @@ class _TripItinerariesScreenState extends State<TripItinerariesScreen> {
                   ),
             ),
             const SizedBox(height: 24),
+
+            // ======================================================
+            // 🔴 [START] LIST: Generated Itineraries Tier Cards
+            // DESCRIPTION: 3-Day, 5-Day, and 7-Day custom tour options with day breakdown and hotel tiers.
+            // 🎓 TO HIDE THIS LIST:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             ..._generateItineraries.asMap().entries.map((entry) {
               final index = entry.key;
               final itinerary = entry.value;
@@ -231,7 +238,18 @@ class _TripItinerariesScreenState extends State<TripItinerariesScreen> {
                 ),
               );
             }).toList(),
+            // ======================================================
+            // 🔴 [END] LIST: Generated Itineraries Tier Cards
+            // ======================================================
+
             const SizedBox(height: 32),
+
+            // ======================================================
+            // 🔴 [START] BUTTON: Continue to Booking Button
+            // DESCRIPTION: Passes selected tier to the personal details and payment form.
+            // 🎓 TO HIDE THIS BUTTON:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -239,6 +257,9 @@ class _TripItinerariesScreenState extends State<TripItinerariesScreen> {
                 child: const Text('Continue to Booking'),
               ),
             ),
+            // ======================================================
+            // 🔴 [END] BUTTON: Continue to Booking Button
+            // ======================================================
             const SizedBox(height: 16),
           ],
         ),

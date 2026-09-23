@@ -28,6 +28,13 @@ class RouteAttractionsScreen extends StatelessWidget {
         itemCount: DummyData.routeAttractions.length,
         itemBuilder: (context, index) {
           final attraction = DummyData.routeAttractions[index];
+
+          // ======================================================
+          // 🔴 [START] CARD: Wayside Route Attraction Card
+          // DESCRIPTION: Displays photo, category badge, rating, distance along highway, and description.
+          // 🎓 TO HIDE THIS CARD:
+          //    Comment out lines from [START] to [END] of this block.
+          // ======================================================
           return Container(
             margin: const EdgeInsets.only(bottom: 24),
             decoration: BoxDecoration(
@@ -35,7 +42,7 @@ class RouteAttractionsScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 ),
@@ -64,7 +71,7 @@ class RouteAttractionsScreen extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color: AppTheme.accentTeal.withOpacity(0.12),
+                                color: AppTheme.accentTeal.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -110,6 +117,13 @@ class RouteAttractionsScreen extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.4),
                         ),
                         const SizedBox(height: 14),
+
+                        // ======================================================
+                        // 🔴 [START] BUTTON: Include In Itinerary Button
+                        // DESCRIPTION: Appends this wayside scenic spot to the traveler's route plan.
+                        // 🎓 TO HIDE THIS BUTTON:
+                        //    Comment out lines from [START] to [END] of this block.
+                        // ======================================================
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
@@ -125,12 +139,18 @@ class RouteAttractionsScreen extends StatelessWidget {
                             label: const Text('Include in Itinerary'),
                           ),
                         ),
+                        // ======================================================
+                        // 🔴 [END] BUTTON: Include In Itinerary Button
+                        // ======================================================
                       ],
                     ),
                   ),
               ],
             ),
           );
+          // ======================================================
+          // 🔴 [END] CARD: Wayside Route Attraction Card
+          // ======================================================
         },
       ),
     );

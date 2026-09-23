@@ -46,12 +46,13 @@ class TravelAssistantApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
 
-      // 🎓 TEACHER TRICK: Change initialRoute to test any screen instantly:
-      // - AppRoutes.splash (Default flow: Splash -> Onboarding -> Login -> Home)
-      // - AppRoutes.mainShell (Instant bypass to Home Screen)
-      // - AppRoutes.loginSignup (Instant Login Screen)
-      // - AppRoutes.mapScreen (Instant Map Screen)
-      initialRoute: AppRoutes.splash,
+      // 🎓 TEACHER TRICK: Toggle AppConfig flags in lib/core/app_config.dart
+      // (fastSplash, skipOnboarding, requireLogin) or override initialRoute directly:
+      initialRoute: AppConfig.fastSplash
+          ? AppRoutes.mainShell
+          : (AppConfig.skipOnboarding
+              ? (AppConfig.requireLogin ? AppRoutes.loginSignup : AppRoutes.mainShell)
+              : AppRoutes.splash),
 
       routes: {
         AppRoutes.splash: (context) => const SplashScreen(),

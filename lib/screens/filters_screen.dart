@@ -103,6 +103,12 @@ class _FiltersScreenState extends State<FiltersScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ======================================================
+            // 🔴 [START] SECTION: Region Filter Chips
+            // DESCRIPTION: Filters trips across Pakistani geographic zones.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             Text('Region', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 16),
             Wrap(
@@ -110,9 +116,18 @@ class _FiltersScreenState extends State<FiltersScreen> {
               runSpacing: 12,
               children: _regions.map((r) => _buildFilterChip(r['value']!, _selectedRegion, () => setState(() => _selectedRegion = r['value']!), r['label']!)).toList(),
             ),
+            // ======================================================
+            // 🔴 [END] SECTION: Region Filter Chips
+            // ======================================================
+
             const SizedBox(height: 24),
-            // Budget filter removed
-            const SizedBox(height: 24),
+
+            // ======================================================
+            // 🔴 [START] SECTION: Duration Filter Chips
+            // DESCRIPTION: Filters trips by Weekend, Week, 2 Weeks, or Month.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             Text('Duration', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 16),
             Wrap(
@@ -120,7 +135,18 @@ class _FiltersScreenState extends State<FiltersScreen> {
               runSpacing: 12,
               children: _tripDurations.map((d) => _buildFilterChip(d['value']!, _tripDuration, () => setState(() => _tripDuration = d['value']!), d['label']!)).toList(),
             ),
+            // ======================================================
+            // 🔴 [END] SECTION: Duration Filter Chips
+            // ======================================================
+
             const SizedBox(height: 24),
+
+            // ======================================================
+            // 🔴 [START] SECTION: Activities Multi-Select Filter Chips
+            // DESCRIPTION: Filters trips by Mountains, Lakes, Rivers, Forests, Cultural, Adventure.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             Text('Activities', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 16),
             Wrap(
@@ -136,7 +162,18 @@ class _FiltersScreenState extends State<FiltersScreen> {
                 });
               }, a['label']!)).toList(),
             ),
+            // ======================================================
+            // 🔴 [END] SECTION: Activities Multi-Select Filter Chips
+            // ======================================================
+
             const SizedBox(height: 24),
+
+            // ======================================================
+            // 🔴 [START] SECTION: Minimum Star Rating Filter Chips
+            // DESCRIPTION: Filters trips by customer feedback rating threshold.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             Text('Minimum Rating', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 16),
             Wrap(
@@ -144,7 +181,18 @@ class _FiltersScreenState extends State<FiltersScreen> {
               runSpacing: 12,
               children: _ratings.map((r) => _buildFilterChip(r['value']!, _rating, () => setState(() => _rating = r['value']!), r['label']!)).toList(),
             ),
+            // ======================================================
+            // 🔴 [END] SECTION: Minimum Star Rating Filter Chips
+            // ======================================================
+
             const SizedBox(height: 32),
+
+            // ======================================================
+            // 🔴 [START] BUTTON: Apply Filters Button
+            // DESCRIPTION: Submits selected filter criteria and updates destination search results.
+            // 🎓 TO HIDE THIS BUTTON:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -152,6 +200,9 @@ class _FiltersScreenState extends State<FiltersScreen> {
                 child: const Text('Apply Filters'),
               ),
             ),
+            // ======================================================
+            // 🔴 [END] BUTTON: Apply Filters Button
+            // ======================================================
             const SizedBox(height: 16),
           ],
         ),

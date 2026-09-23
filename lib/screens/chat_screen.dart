@@ -22,7 +22,6 @@ import 'package:latlong2/latlong.dart';
 import '../core/theme.dart';
 import '../core/dummy_data.dart';
 import '../core/api_service.dart';
-import '../core/app_config.dart';
 import '../widgets/custom_app_bar.dart';
 import 'map_screen.dart';
 
@@ -211,10 +210,25 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: CustomAppBar(
         title: 'AI Travel Assistant',
         actions: [
+          // ======================================================
+          // 🔴 [START] BUTTON: Clear Chat Action Button
+          // DESCRIPTION: Clears chat history and restarts the conversation with AI.
+          // 🎓 TO HIDE THIS BUTTON:
+          //    Comment out lines from [START] to [END] of this block.
+          // ======================================================
           IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {},
-          )
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Clear & Restart Chat',
+            onPressed: () {
+              setState(() {
+                _messages.clear();
+                _initializeChat();
+              });
+            },
+          ),
+          // ======================================================
+          // 🔴 [END] BUTTON: Clear Chat Action Button
+          // ======================================================
         ],
       ),
       body: Column(
@@ -306,6 +320,12 @@ class _ChatScreenState extends State<ChatScreen> {
     final coordinates = msg['coordinates'] as LatLng;
     final address = msg['address'] as String;
 
+    // ======================================================
+    // 🔴 [START] CARD: Interactive Map Location Card
+    // DESCRIPTION: Live OpenStreetMap tile render showing user coordinates and marker.
+    // 🎓 TO HIDE THIS CARD:
+    //    Comment out lines from [START] to [END] of this block.
+    // ======================================================
     return Container(
       width: 280,
       decoration: BoxDecoration(
@@ -379,11 +399,20 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
+    // ======================================================
+    // 🔴 [END] CARD: Interactive Map Location Card
+    // ======================================================
   }
 
   Widget _buildRecommendationsCard(Map<String, dynamic> msg) {
     final destinations = msg['destinations'] as List<Map<String, dynamic>>;
 
+    // ======================================================
+    // 🔴 [START] CARD: AI Suggested Destinations Carousel
+    // DESCRIPTION: List of clickable destination cards suggested dynamically by AI.
+    // 🎓 TO HIDE THIS CARD:
+    //    Comment out lines from [START] to [END] of this block.
+    // ======================================================
     return Column(
       children: destinations.map((dest) {
         return GestureDetector(
@@ -435,12 +464,21 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       }).toList(),
     );
+    // ======================================================
+    // 🔴 [END] CARD: AI Suggested Destinations Carousel
+    // ======================================================
   }
 
   Widget _buildDestinationDetailsCard(Map<String, dynamic> msg) {
     final destination = msg['destination'] as Map<String, dynamic>;
     final userLocation = msg['userLocation'] as String;
 
+    // ======================================================
+    // 🔴 [START] CARD: Destination Detail & Live Map Route Card
+    // DESCRIPTION: Card showing thumbnail, distance, price, and route preview with tap to open Map.
+    // 🎓 TO HIDE THIS CARD:
+    //    Comment out lines from [START] to [END] of this block.
+    // ======================================================
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -556,6 +594,9 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
     );
+    // ======================================================
+    // 🔴 [END] CARD: Destination Detail & Live Map Route Card
+    // ======================================================
   }
 
   Widget _buildInputArea() {
@@ -574,6 +615,12 @@ class _ChatScreenState extends State<ChatScreen> {
       child: SafeArea(
         child: Row(
           children: [
+            // ======================================================
+            // 🔴 [START] INPUT: Chat Message Text Field
+            // DESCRIPTION: Traveler message input box for asking travel recommendations.
+            // 🎓 TO HIDE THIS INPUT:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             Expanded(
               child: TextField(
                 controller: _messageController,
@@ -590,7 +637,18 @@ class _ChatScreenState extends State<ChatScreen> {
                 onSubmitted: (text) => _sendMessage(text),
               ),
             ),
+            // ======================================================
+            // 🔴 [END] INPUT: Chat Message Text Field
+            // ======================================================
+
             const SizedBox(width: 8),
+
+            // ======================================================
+            // 🔴 [START] BUTTON: Send Message Floating Button
+            // DESCRIPTION: Dispatches the user query to the AI engine or FastAPI backend.
+            // 🎓 TO HIDE THIS BUTTON:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             Container(
               decoration: const BoxDecoration(
                 color: AppTheme.accentTeal,
@@ -601,6 +659,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 onPressed: () => _sendMessage(_messageController.text),
               ),
             ),
+            // ======================================================
+            // 🔴 [END] BUTTON: Send Message Floating Button
+            // ======================================================
           ],
         ),
       ),

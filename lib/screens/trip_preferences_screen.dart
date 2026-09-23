@@ -38,6 +38,12 @@ class _TripPreferencesScreenState extends State<TripPreferencesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ======================================================
+            // 🔴 [START] SECTION: Companions Filter Chips
+            // DESCRIPTION: Selection chips for Solo, Couple, Family, or Friends trip type.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             Text('Who is traveling?', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 16),
             Wrap(
@@ -59,7 +65,18 @@ class _TripPreferencesScreenState extends State<TripPreferencesScreen> {
                 );
               }).toList(),
             ),
+            // ======================================================
+            // 🔴 [END] SECTION: Companions Filter Chips
+            // ======================================================
+
             const SizedBox(height: 32),
+
+            // ======================================================
+            // 🔴 [START] SECTION: Budget Per Person Slider
+            // DESCRIPTION: Interactive slider to configure minimum and maximum budget per traveler.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             Text('Budget (per person)', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
             Row(
@@ -78,7 +95,18 @@ class _TripPreferencesScreenState extends State<TripPreferencesScreen> {
               activeColor: AppTheme.accentTeal,
               onChanged: (val) => setState(() => _budget = val),
             ),
+            // ======================================================
+            // 🔴 [END] SECTION: Budget Per Person Slider
+            // ======================================================
+
             const SizedBox(height: 32),
+
+            // ======================================================
+            // 🔴 [START] SECTION: Trip Mood Filter Chips
+            // DESCRIPTION: Multi-select chips for Relaxing, Romantic, Adventure, Cultural, Foodie, Nature.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             Text('Trip Mood', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 16),
             Wrap(
@@ -94,12 +122,23 @@ class _TripPreferencesScreenState extends State<TripPreferencesScreen> {
                       if (selected) _selectedMoods.add(mood); else _selectedMoods.remove(mood);
                     });
                   },
-                  selectedColor: AppTheme.accentTeal.withOpacity(0.2),
+                  selectedColor: AppTheme.accentTeal.withValues(alpha: 0.2),
                   checkmarkColor: AppTheme.accentTeal,
                 );
               }).toList(),
             ),
+            // ======================================================
+            // 🔴 [END] SECTION: Trip Mood Filter Chips
+            // ======================================================
+
             const SizedBox(height: 48),
+
+            // ======================================================
+            // 🔴 [START] BUTTON: Save Preferences Button
+            // DESCRIPTION: Saves user travel style for personalized AI suggestions.
+            // 🎓 TO HIDE THIS BUTTON:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -109,6 +148,9 @@ class _TripPreferencesScreenState extends State<TripPreferencesScreen> {
                 child: const Text('Save Preferences'),
               ),
             ),
+            // ======================================================
+            // 🔴 [END] BUTTON: Save Preferences Button
+            // ======================================================
           ],
         ),
       ),

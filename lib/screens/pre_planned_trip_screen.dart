@@ -45,13 +45,34 @@ class PrePlannedTripScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ======================================================
+            // 🔴 [START] SECTION: Day-by-Day Activity Schedule
+            // DESCRIPTION: Morning, afternoon, and evening itinerary breakdown cards.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             const Text('Day by Day', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             ...days.map((d) => _DayCard(day: d)).toList(),
+            // ======================================================
+            // 🔴 [END] SECTION: Day-by-Day Activity Schedule
+            // ======================================================
+
             const SizedBox(height: 16),
+
+            // ======================================================
+            // 🔴 [START] SECTION: Hotel Recommendations & Rates
+            // DESCRIPTION: Suggested accommodation stays with star ratings and nightly price.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             const Text('Hotel Suggestions', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             ...hotels.map((h) => _HotelRow(hot: h)).toList(),
+            // ======================================================
+            // 🔴 [END] SECTION: Hotel Recommendations & Rates
+            // ======================================================
+
             const SizedBox(height: 16),
             const Text('Included Meals', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
@@ -61,28 +82,37 @@ class PrePlannedTripScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Total trip price', style: TextStyle(fontSize: 18)),
-                Text('PKR ${totalPrice}', style: const TextStyle(fontSize: 18, color: AppTheme.accentTeal, fontWeight: FontWeight.bold)),
+                Text('PKR $totalPrice', style: const TextStyle(fontSize: 18, color: AppTheme.accentTeal, fontWeight: FontWeight.bold)),
               ],
             ),
             const SizedBox(height: 16),
           ],
         ),
       ),
+
+      // ======================================================
+      // 🔴 [START] BUTTON: Confirm Booking Bottom Bar Button
+      // DESCRIPTION: Opens customer personal details and pickup form for this pre-planned trip.
+      // 🎓 TO HIDE THIS BUTTON:
+      //    Comment out lines from [START] to [END] of this block.
+      // ======================================================
       bottomNavigationBar: Container(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         color: Colors.white,
         child: SizedBox(
           width: double.infinity,
-            child: ElevatedButton(
+          child: ElevatedButton(
             onPressed: () {
-              // Navigate to Booking Details screen to collect user data
               Navigator.push(context, MaterialPageRoute(builder: (context) => BookingDetailsScreen(destination: destination)));
             },
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accentTeal),
             child: const Text('Confirm Booking'),
-              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accentTeal),
-              ),
+          ),
         ),
       ),
+      // ======================================================
+      // 🔴 [END] BUTTON: Confirm Booking Bottom Bar Button
+      // ======================================================
     );
   }
 }

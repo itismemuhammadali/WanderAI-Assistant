@@ -65,7 +65,12 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Contact Section
+            // ======================================================
+            // 🔴 [START] SECTION: Get In Touch (Contact Channels)
+            // DESCRIPTION: Direct communication links for email, phone, and 24/7 live chat.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             Container(
               padding: const EdgeInsets.all(24),
               color: AppTheme.accentTeal.withValues(alpha: 0.05),
@@ -102,7 +107,16 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 ],
               ),
             ),
-            // FAQ Section
+            // ======================================================
+            // 🔴 [END] SECTION: Get In Touch (Contact Channels)
+            // ======================================================
+
+            // ======================================================
+            // 🔴 [START] SECTION: Frequently Asked Questions Accordion
+            // DESCRIPTION: Expandable list of common travel, cancellation, and refund questions.
+            // 🎓 TO HIDE THIS SECTION:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -123,6 +137,9 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 ],
               ),
             ),
+            // ======================================================
+            // 🔴 [END] SECTION: Frequently Asked Questions Accordion
+            // ======================================================
           ],
         ),
       ),

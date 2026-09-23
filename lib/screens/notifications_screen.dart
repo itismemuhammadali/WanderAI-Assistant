@@ -78,10 +78,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         title: 'Notifications',
         showBackButton: true,
         actions: [
+          // ======================================================
+          // 🔴 [START] BUTTON: Mark All Read Text Button
+          // DESCRIPTION: Marks all travel alerts and booking notifications as seen.
+          // 🎓 TO HIDE THIS BUTTON:
+          //    Comment out lines from [START] to [END] of this block.
+          // ======================================================
           TextButton(
             onPressed: () => _markAllAsRead(),
             child: const Text('Mark all read'),
           ),
+          // ======================================================
+          // 🔴 [END] BUTTON: Mark All Read Text Button
+          // ======================================================
         ],
       ),
       body: _notifications.isEmpty
@@ -107,6 +116,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   Widget _buildNotificationTile(Map<String, dynamic> notif) {
     final isRead = notif['isRead'] as bool;
+
+    // ======================================================
+    // 🔴 [START] TILE: Notification Alert Card
+    // DESCRIPTION: Displays individual alert icon, title, timestamp, and message body.
+    // 🎓 TO HIDE THIS TILE:
+    //    Comment out lines from [START] to [END] of this block.
+    // ======================================================
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
@@ -177,6 +193,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ],
       ),
     );
+    // ======================================================
+    // 🔴 [END] TILE: Notification Alert Card
+    // ======================================================
   }
 
   void _markAllAsRead() {

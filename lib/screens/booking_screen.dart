@@ -5,18 +5,14 @@
 //          Number of Travelers, Transport Mode, Accommodation, Budget).
 //
 // 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
-// 1. TEACHER: "Booking screen app se hata do!"
-//    - In lib/core/app_config.dart, set: AppConfig.enableBooking = false;
-// 2. TEACHER: "Travelers count ya default values change karo!"
-//    - Look at lines 33-38 below (_travelers = 2, _tripType = 'solo').
-// 3. TEACHER: "Filters icon hata do!"
-//    - In app bar actions (Line 72), comment out the filters IconButton.
+// To remove or hide ANY component on this screen, find its conspicuous
+// 🔴 [START] and 🔴 [END] comment banners below. Each banner gives you
+// exact instructions on how to comment it out or toggle it!
 // ============================================================================
 
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../core/dummy_data.dart';
-import '../core/app_config.dart';
 import '../widgets/custom_app_bar.dart';
 import 'filters_screen.dart';
 import 'trip_itineraries_screen.dart';
@@ -34,7 +30,6 @@ class _BookingScreenState extends State<BookingScreen> {
   int _travelers = 2;
   String _travelMode = 'car';
   String _accommodation = 'hotel';
-  int _budget = 50000;
   String _searchQuery = '';
   String _region = 'all';
   List<String> _selectedActivities = [];
@@ -47,15 +42,12 @@ class _BookingScreenState extends State<BookingScreen> {
 
   List<Map<String, dynamic>> get _filteredDestinations {
     List<Map<String, dynamic>> dests = [...DummyData.popularDestinations, ...DummyData.featuredPlaces];
-    // Region filtering
     if (_region != 'all') {
       dests = dests.where((d) => d['region'] == _region).toList();
     }
-    // Search by name
     if (_searchQuery.isNotEmpty) {
       dests = dests.where((dest) => dest['name'].toString().toLowerCase().contains(_searchQuery.toLowerCase())).toList();
     }
-    // Filter by activities
     if (_selectedActivities.isNotEmpty) {
       dests = dests.where((dest) {
         final tags = (dest['tags'] as List).cast<String>();
@@ -68,7 +60,7 @@ class _BookingScreenState extends State<BookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'Book a Trip',
         showBackButton: true,
       ),
@@ -81,6 +73,12 @@ class _BookingScreenState extends State<BookingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // ======================================================
+                  // 🔴 [START] INPUT: Search Bar & Filters Modal Opener
+                  // DESCRIPTION: Search field that also opens the Filters modal bottom sheet.
+                  // 🎓 TO HIDE THIS COMPONENT:
+                  //    Comment out lines from [START] to [END] of this block.
+                  // ======================================================
                   GestureDetector(
                     onTap: () {
                       showModalBottomSheet(
@@ -126,6 +124,9 @@ class _BookingScreenState extends State<BookingScreen> {
                       ),
                     ),
                   ),
+                  // ======================================================
+                  // 🔴 [END] INPUT: Search Bar & Filters Modal Opener
+                  // ======================================================
                 ],
               ),
             ),
@@ -134,40 +135,120 @@ class _BookingScreenState extends State<BookingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // ======================================================
+                  // 🔴 [START] SECTION: Destination Selection Tiles
+                  // DESCRIPTION: List of Pakistani destinations user can pick from.
+                  // 🎓 TO HIDE THIS SECTION:
+                  //    Comment out lines from [START] to [END] of this block.
+                  // ======================================================
                   Text('Select Destination', style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 16),
                   ..._filteredDestinations.map((dest) => _buildDestinationTile(dest)),
+                  // ======================================================
+                  // 🔴 [END] SECTION: Destination Selection Tiles
+                  // ======================================================
+
                   const SizedBox(height: 24),
+
+                  // ======================================================
+                  // 🔴 [START] COMPONENT: Trip Type Option Chips
+                  // DESCRIPTION: Selection chips for Solo, Couple, Family, Group.
+                  // 🎓 TO HIDE THIS COMPONENT:
+                  //    Comment out lines from [START] to [END] of this block.
+                  // ======================================================
                   Text('Trip Type', style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 16),
                   Wrap(
                     spacing: 12,
                     runSpacing: 12,
-                    children: _tripTypes.map((type) => _buildOptionChip(type, _tripType, () => setState(() => _tripType = type), _getTripTypeLabel)).toList(),
+                    children: _tripTypes
+                        .map((type) => _buildOptionChip(
+                              type,
+                              _tripType,
+                              () => setState(() => _tripType = type),
+                              _getTripTypeLabel,
+                            ))
+                        .toList(),
                   ),
+                  // ======================================================
+                  // 🔴 [END] COMPONENT: Trip Type Option Chips
+                  // ======================================================
+
                   const SizedBox(height: 24),
+
+                  // ======================================================
+                  // 🔴 [START] COMPONENT: Travelers Counter (+ and - Buttons)
+                  // DESCRIPTION: Counter widget to increase or decrease passenger count.
+                  // 🎓 TO HIDE THIS COMPONENT:
+                  //    Comment out lines from [START] to [END] of this block.
+                  // ======================================================
                   Text('Travelers', style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 16),
                   _buildCounter(),
+                  // ======================================================
+                  // 🔴 [END] COMPONENT: Travelers Counter
+                  // ======================================================
+
                   const SizedBox(height: 24),
+
+                  // ======================================================
+                  // 🔴 [START] COMPONENT: Travel Mode Option Chips
+                  // DESCRIPTION: Mode of transport (Car, Bus, Flight).
+                  // 🎓 TO HIDE THIS COMPONENT:
+                  //    Comment out lines from [START] to [END] of this block.
+                  // ======================================================
                   Text('Travel Mode', style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 16),
                   Wrap(
                     spacing: 12,
                     runSpacing: 12,
-                    children: _travelModes.map((mode) => _buildOptionChip(mode, _travelMode, () => setState(() => _travelMode = mode), _getTravelModeLabel)).toList(),
+                    children: _travelModes
+                        .map((mode) => _buildOptionChip(
+                              mode,
+                              _travelMode,
+                              () => setState(() => _travelMode = mode),
+                              _getTravelModeLabel,
+                            ))
+                        .toList(),
                   ),
+                  // ======================================================
+                  // 🔴 [END] COMPONENT: Travel Mode Option Chips
+                  // ======================================================
+
                   const SizedBox(height: 24),
-Text('Accommodation', style: Theme.of(context).textTheme.headlineMedium),
+
+                  // ======================================================
+                  // 🔴 [START] COMPONENT: Accommodation Option Chips
+                  // DESCRIPTION: Lodging type (Hotel, Resort, Cottage, Camping).
+                  // 🎓 TO HIDE THIS COMPONENT:
+                  //    Comment out lines from [START] to [END] of this block.
+                  // ======================================================
+                  Text('Accommodation', style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 16),
                   Wrap(
                     spacing: 12,
                     runSpacing: 12,
-                    children: _accommodations.map((acc) => _buildOptionChip(acc, _accommodation, () => setState(() => _accommodation = acc), _getAccommodationLabel)).toList(),
+                    children: _accommodations
+                        .map((acc) => _buildOptionChip(
+                              acc,
+                              _accommodation,
+                              () => setState(() => _accommodation = acc),
+                              _getAccommodationLabel,
+                            ))
+                        .toList(),
                   ),
-                  const SizedBox(height: 24),
-                  // Budget filter removed
+                  // ======================================================
+                  // 🔴 [END] COMPONENT: Accommodation Option Chips
+                  // ======================================================
+
                   const SizedBox(height: 32),
+
+                  // ======================================================
+                  // 🔴 [START] BUTTON: View Trip Options Submit Button
+                  // DESCRIPTION: Navigates to TripItinerariesScreen with configured params.
+                  // 🎓 TO HIDE THIS BUTTON:
+                  //    Comment out lines from [START] to [END] of this block.
+                  // ======================================================
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -196,7 +277,11 @@ Text('Accommodation', style: Theme.of(context).textTheme.headlineMedium),
                       child: const Text('View Trip Options'),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  // ======================================================
+                  // 🔴 [END] BUTTON: View Trip Options Submit Button
+                  // ======================================================
+
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
@@ -259,14 +344,17 @@ Text('Accommodation', style: Theme.of(context).textTheme.headlineMedium),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.accentTeal : Colors.grey.shade100,
+          color: isSelected ? AppTheme.accentTeal : Colors.white,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppTheme.accentTeal : Colors.grey.shade300,
+          ),
         ),
         child: Text(
           label(value),
           style: TextStyle(
             color: isSelected ? Colors.white : AppTheme.textPrimary,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
       ),
@@ -274,27 +362,33 @@ Text('Accommodation', style: Theme.of(context).textTheme.headlineMedium),
   }
 
   Widget _buildCounter() {
-    return Row(
-      children: [
-        IconButton(
-          onPressed: _travelers > 1 ? () => setState(() => _travelers--) : null,
-          icon: const Icon(Icons.remove_circle_outline),
-          iconSize: 32,
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300),
-            borderRadius: BorderRadius.circular(12),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.remove),
+            onPressed: _travelers > 1 ? () => setState(() => _travelers--) : null,
           ),
-          child: Text('$_travelers', style: Theme.of(context).textTheme.headlineMedium),
-        ),
-        IconButton(
-          onPressed: _travelers < 20 ? () => setState(() => _travelers++) : null,
-          icon: const Icon(Icons.add_circle_outline),
-          iconSize: 32,
-        ),
-      ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              '$_travelers',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () => setState(() => _travelers++),
+          ),
+        ],
+      ),
     );
   }
 
@@ -316,11 +410,11 @@ Text('Accommodation', style: Theme.of(context).textTheme.headlineMedium),
   String _getTravelModeLabel(String mode) {
     switch (mode) {
       case 'car':
-        return 'Car';
+        return 'Private Car';
       case 'bus':
-        return 'Bus';
+        return 'Luxury Bus';
       case 'flight':
-        return 'Flight';
+        return 'Domestic Flight';
       default:
         return mode;
     }
@@ -333,9 +427,9 @@ Text('Accommodation', style: Theme.of(context).textTheme.headlineMedium),
       case 'resort':
         return 'Resort';
       case 'cottage':
-        return 'Cottage';
+        return 'Pine Cottage';
       case 'camping':
-        return 'Camping';
+        return 'Glamping / Camp';
       default:
         return acc;
     }

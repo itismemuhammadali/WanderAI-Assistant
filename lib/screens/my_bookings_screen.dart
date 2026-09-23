@@ -103,6 +103,12 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
             ? Colors.orange
             : Colors.grey;
 
+    // ======================================================
+    // 🔴 [START] CARD: Booking Summary Card
+    // DESCRIPTION: Displays destination cover, dates, traveler count, price, and status badge.
+    // 🎓 TO HIDE THIS CARD:
+    //    Comment out lines from [START] to [END] of this block.
+    // ======================================================
     return GestureDetector(
       onTap: () => _showBookingDetails(booking),
       child: Container(
@@ -212,6 +218,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
         ),
       ),
     );
+    // ======================================================
+    // 🔴 [END] CARD: Booking Summary Card
+    // ======================================================
   }
 
   void _showBookingDetails(Map<String, dynamic> booking) {
@@ -249,6 +258,13 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                     ),
               ),
               const SizedBox(height: 12),
+
+              // ======================================================
+              // 🔴 [START] BUTTON: Download Itinerary Button
+              // DESCRIPTION: Downloads offline PDF itinerary and summary of the booking.
+              // 🎓 TO HIDE THIS BUTTON:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -261,7 +277,18 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                   child: const Text('Download Itinerary'),
                 ),
               ),
+              // ======================================================
+              // 🔴 [END] BUTTON: Download Itinerary Button
+              // ======================================================
+
               const SizedBox(height: 12),
+
+              // ======================================================
+              // 🔴 [START] BUTTON: Cancel Booking Button
+              // DESCRIPTION: Triggers booking cancellation and refund policy workflow.
+              // 🎓 TO HIDE THIS BUTTON:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
@@ -274,6 +301,10 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                   child: const Text('Cancel Booking'),
                 ),
               ),
+              // ======================================================
+              // 🔴 [END] BUTTON: Cancel Booking Button
+              // ======================================================
+
               const SizedBox(height: 24),
             ],
           ),

@@ -72,6 +72,12 @@ class _TripsScreenState extends State<TripsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // ======================================================
+                // 🔴 [START] INPUT: Search & Filter Modal Launcher Bar
+                // DESCRIPTION: Tapping opens the interactive bottom sheet filter modal.
+                // 🎓 TO HIDE THIS INPUT:
+                //    Comment out lines from [START] to [END] of this block.
+                // ======================================================
                 GestureDetector(
                   onTap: () {
                     showModalBottomSheet(
@@ -103,7 +109,18 @@ class _TripsScreenState extends State<TripsScreen> {
                     ),
                   ),
                 ),
+                // ======================================================
+                // 🔴 [END] INPUT: Search & Filter Modal Launcher Bar
+                // ======================================================
+
                 const SizedBox(height: 12),
+
+                // ======================================================
+                // 🔴 [START] SECTION: Price & Popularity Sort Chips
+                // DESCRIPTION: Sorts tour packages by Low to High, High to Low, or Popular.
+                // 🎓 TO HIDE THIS SECTION:
+                //    Comment out lines from [START] to [END] of this block.
+                // ======================================================
                 Row(
                   children: [
                     Text('Sort by:', style: Theme.of(context).textTheme.bodyMedium),
@@ -135,6 +152,9 @@ class _TripsScreenState extends State<TripsScreen> {
                     ),
                   ],
                 ),
+                // ======================================================
+                // 🔴 [END] SECTION: Price & Popularity Sort Chips
+                // ======================================================
               ],
             ),
           ),
@@ -152,6 +172,12 @@ class _TripsScreenState extends State<TripsScreen> {
                       ],
                     ),
                   )
+                // ======================================================
+                // 🔴 [START] LIST: Tour Packages & Destination Cards
+                // DESCRIPTION: Scrollable list of Pakistani travel package cards.
+                // 🎓 TO HIDE THIS LIST:
+                //    Comment out lines from [START] to [END] of this block.
+                // ======================================================
                 : ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: trips.length,
@@ -168,6 +194,9 @@ class _TripsScreenState extends State<TripsScreen> {
                       );
                     },
                   ),
+                // ======================================================
+                // 🔴 [END] LIST: Tour Packages & Destination Cards
+                // ======================================================
           ),
         ],
       ),

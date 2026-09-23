@@ -1,22 +1,13 @@
 // ============================================================================
-// SCREEN: Home Screen (Discover)
+// SCREEN: Home Screen (Discover Dashboard)
 // FILE: lib/screens/home_screen.dart
 // PURPOSE: Primary dashboard displaying Top Picks, Quick Action buttons, Trips & Tours,
 //          Popular Destinations across Pakistan, and Featured Collections.
 //
 // 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
-// 1. TEACHER: "Book a Trip button ya Messages button hatao!"
-//    - In lib/core/app_config.dart, set:
-//        AppConfig.enableBooking = false; (hides Book a Trip)
-//        AppConfig.enableAiChat = false;  (hides Messages / AI)
-//    - Or comment out Lines 130-155 below!
-//
-// 2. TEACHER: "Notifications icon header se hata do!"
-//    - In lib/core/app_config.dart, set AppConfig.enableNotifications = false;
-//    - Or remove the IconButton at Line 42!
-//
-// 3. TEACHER: "Top Picks ya Featured Collections section hata do!"
-//    - Comment out Lines 70-125 (Top Picks) or Lines 220-275 (Featured Collections)!
+// To remove or hide ANY component on this screen, find its conspicuous
+// 🔴 [START] and 🔴 [END] comment banners below. Each banner gives you
+// exact instructions on how to comment it out or toggle it via AppConfig!
 // ============================================================================
 
 import 'package:flutter/material.dart';
@@ -40,6 +31,13 @@ class HomeScreen extends StatelessWidget {
       appBar: CustomAppBar(
         title: 'Discover',
         actions: [
+          // ======================================================
+          // 🔴 [START] BUTTON: Notifications App Bar Icon
+          // DESCRIPTION: Bell icon in top bar that opens NotificationsScreen.
+          // 🎓 TO HIDE THIS BUTTON:
+          //    METHOD 1: Set AppConfig.enableNotifications = false; in lib/core/app_config.dart
+          //    METHOD 2: Comment out lines from [START] to [END] of this block.
+          // ======================================================
           if (AppConfig.enableNotifications)
             IconButton(
               icon: const Icon(Icons.notifications_none),
@@ -47,6 +45,9 @@ class HomeScreen extends StatelessWidget {
                 Navigator.pushNamed(context, AppRoutes.notificationsScreen);
               },
             ),
+          // ======================================================
+          // 🔴 [END] BUTTON: Notifications App Bar Icon
+          // ======================================================
           const SizedBox(width: 8),
         ],
       ),
@@ -61,6 +62,13 @@ class HomeScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 24),
+
+              // ======================================================
+              // 🔴 [START] INPUT: Search Destinations Bar
+              // DESCRIPTION: Interactive search bar that taps into the Booking flow.
+              // 🎓 TO HIDE THIS INPUT:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               GestureDetector(
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingScreen()));
@@ -73,7 +81,18 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              // ======================================================
+              // 🔴 [END] INPUT: Search Destinations Bar
+              // ======================================================
+
               const SizedBox(height: 32),
+
+              // ======================================================
+              // 🔴 [START] SECTION: Top Picks Horizontal Carousel
+              // DESCRIPTION: Shows curated top 3 Pakistani tourist highlights.
+              // 🎓 TO HIDE THIS SECTION:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               Text('Top Picks', style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: 16),
               SizedBox(
@@ -144,9 +163,23 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
               ),
+              // ======================================================
+              // 🔴 [END] SECTION: Top Picks Horizontal Carousel
+              // ======================================================
+
               const SizedBox(height: 32),
+
+              // ======================================================
+              // 🔴 [START] BUTTON ROW: Book a Trip & Messages / AI Chat
+              // DESCRIPTION: Quick action buttons for booking and AI conversation.
+              // 🎓 TO HIDE THESE BUTTONS:
+              //    - Set AppConfig.enableBooking = false; to hide "Book a Trip"
+              //    - Set AppConfig.enableAiChat = false; to hide "Messages"
+              //    - Or comment out lines from [START] to [END] of this block.
+              // ======================================================
               Row(
                 children: [
+                  // Book a Trip Button
                   if (AppConfig.enableBooking)
                     Expanded(
                       child: ElevatedButton.icon(
@@ -161,6 +194,8 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                   if (AppConfig.enableBooking && AppConfig.enableAiChat) const SizedBox(width: 16),
+
+                  // Messages / AI Chat Button
                   if (AppConfig.enableAiChat)
                     Expanded(
                       child: OutlinedButton.icon(
@@ -176,7 +211,18 @@ class HomeScreen extends StatelessWidget {
                     ),
                 ],
               ),
+              // ======================================================
+              // 🔴 [END] BUTTON ROW: Book a Trip & Messages
+              // ======================================================
+
               const SizedBox(height: 32),
+
+              // ======================================================
+              // 🔴 [START] SECTION: Trips & Tours Horizontal Cards List
+              // DESCRIPTION: Cards list with "View All" link navigating to TripsScreen.
+              // 🎓 TO HIDE THIS SECTION:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -208,7 +254,18 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
               ),
+              // ======================================================
+              // 🔴 [END] SECTION: Trips & Tours Horizontal Cards List
+              // ======================================================
+
               const SizedBox(height: 32),
+
+              // ======================================================
+              // 🔴 [START] SECTION: Popular Destinations Large Cards
+              // DESCRIPTION: Full-width destination preview cards with price & rating.
+              // 🎓 TO HIDE THIS SECTION:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -239,7 +296,18 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
               ),
+              // ======================================================
+              // 🔴 [END] SECTION: Popular Destinations Large Cards
+              // ======================================================
+
               const SizedBox(height: 32),
+
+              // ======================================================
+              // 🔴 [START] SECTION: Featured Collections
+              // DESCRIPTION: Category cards for scenic Pakistani regions.
+              // 🎓 TO HIDE THIS SECTION:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               Text('Featured Collections', style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: 16),
               SizedBox(
@@ -295,6 +363,10 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
               ),
+              // ======================================================
+              // 🔴 [END] SECTION: Featured Collections
+              // ======================================================
+
               const SizedBox(height: 24),
             ],
           ),

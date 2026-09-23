@@ -77,7 +77,12 @@ class _SavedPlacesScreenState extends State<SavedPlacesScreen> {
       ),
       body: Column(
         children: [
-          // Filter chips
+          // ======================================================
+          // 🔴 [START] SECTION: Saved Places Category Filter Chips
+          // DESCRIPTION: Horizontal chips to filter saved destinations by Mountains, Lakes, Cultural, Adventure.
+          // 🎓 TO HIDE THIS SECTION:
+          //    Comment out lines from [START] to [END] of this block.
+          // ======================================================
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -95,7 +100,16 @@ class _SavedPlacesScreenState extends State<SavedPlacesScreen> {
               ],
             ),
           ),
-          // Saved places list
+          // ======================================================
+          // 🔴 [END] SECTION: Saved Places Category Filter Chips
+          // ======================================================
+
+          // ======================================================
+          // 🔴 [START] LIST: Saved Destinations Catalog List
+          // DESCRIPTION: Displays traveler's wishlist with notes and remove bookmark action.
+          // 🎓 TO HIDE THIS LIST:
+          //    Comment out lines from [START] to [END] of this block.
+          // ======================================================
           Expanded(
             child: _filteredPlaces.isEmpty
                 ? Center(
@@ -124,6 +138,9 @@ class _SavedPlacesScreenState extends State<SavedPlacesScreen> {
                     },
                   ),
           ),
+          // ======================================================
+          // 🔴 [END] LIST: Saved Destinations Catalog List
+          // ======================================================
         ],
       ),
     );

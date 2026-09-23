@@ -65,11 +65,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 8),
+              // ======================================================
+              // 🔴 [START] COMPONENT: User Profile Avatar & Camera Badge
+              // DESCRIPTION: Circular user profile photo with camera icon overlay.
+              // 🎓 TO HIDE THIS COMPONENT:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               Center(
                 child: Stack(
                   alignment: Alignment.bottomRight,
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 54,
                       backgroundImage: NetworkImage(
                           'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400&auto=format&fit=crop'),
@@ -80,13 +86,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: CircleAvatar(
                         radius: 14,
                         backgroundColor: AppTheme.accentTeal,
-                        child: Icon(Icons.camera_alt, size: 14, color: Colors.white),
+                        child: const Icon(Icons.camera_alt, size: 14, color: Colors.white),
                       ),
                     ),
                   ],
                 ),
               ),
+              // ======================================================
+              // 🔴 [END] COMPONENT: User Profile Avatar & Camera Badge
+              // ======================================================
               const SizedBox(height: 12),
+
+              // ======================================================
+              // 🔴 [START] COMPONENT: User Profile Info Details
+              // DESCRIPTION: Displays traveler name, handle, email, and age.
+              // 🎓 TO HIDE THIS COMPONENT:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               Text(name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               Text(username, style: TextStyle(color: AppTheme.textSecondary)),
@@ -94,9 +110,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Text(email, style: TextStyle(color: AppTheme.textSecondary)),
               const SizedBox(height: 4),
               Text('Age $age', style: TextStyle(color: AppTheme.textSecondary)),
+              // ======================================================
+              // 🔴 [END] COMPONENT: User Profile Info Details
+              // ======================================================
               const SizedBox(height: 16),
 
               const Divider(),
+
+              // ======================================================
+              // 🔴 [START] TILE: Trip Preferences
+              // DESCRIPTION: Opens preferences screen to customize travel pace and interests.
+              // 🎓 TO HIDE THIS TILE:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               ListTile(
                 leading: Icon(Icons.settings, color: AppTheme.accentTeal),
                 title: const Text('Trip Preferences'),
@@ -105,20 +131,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Navigator.push(context, MaterialPageRoute(builder: (c) => const TripPreferencesScreen()));
                 },
               ),
+              // ======================================================
+              // 🔴 [END] TILE: Trip Preferences
+              // ======================================================
               const Divider(),
+
+              // ======================================================
+              // 🔴 [START] TILE: My Bookings
+              // DESCRIPTION: Navigates to user booking history and active trip cards.
+              // 🎓 TO HIDE THIS TILE:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               _tile(Icons.book, 'My Bookings', () {
                 Navigator.push(context, MaterialPageRoute(builder: (c) => const MyBookingsScreen()));
               }),
+              // ======================================================
+              // 🔴 [END] TILE: My Bookings
+              // ======================================================
+
+              // ======================================================
+              // 🔴 [START] TILE: Saved Places
+              // DESCRIPTION: Opens list of bookmarked Pakistani attractions and valleys.
+              // 🎓 TO HIDE THIS TILE:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               _tile(Icons.place, 'Saved Places', () {
                 Navigator.push(context, MaterialPageRoute(builder: (c) => const SavedPlacesScreen()));
               }),
+              // ======================================================
+              // 🔴 [END] TILE: Saved Places
+              // ======================================================
+
+              // ======================================================
+              // 🔴 [START] TILE: Notifications
+              // DESCRIPTION: Opens alert center for weather alerts and trip reminders.
+              // 🎓 TO HIDE THIS TILE:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               _tile(Icons.notifications, 'Notifications', () {
                 Navigator.pushNamed(context, AppRoutes.notificationsScreen);
               }),
+              // ======================================================
+              // 🔴 [END] TILE: Notifications
+              // ======================================================
+
+              // ======================================================
+              // 🔴 [START] TILE: Help & Support
+              // DESCRIPTION: Displays FAQs accordion and direct support channels.
+              // 🎓 TO HIDE THIS TILE:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               _tile(Icons.help_outline, 'Help & Support', () {
                 Navigator.push(context, MaterialPageRoute(builder: (c) => const HelpSupportScreen()));
               }),
+              // ======================================================
+              // 🔴 [END] TILE: Help & Support
+              // ======================================================
+
+              // ======================================================
+              // 🔴 [START] TILE: Logout
+              // DESCRIPTION: Shows confirmation dialog and redirects to Login Screen.
+              // 🎓 TO HIDE THIS TILE:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               _tile(Icons.logout, 'Logout', _showLogoutDialog),
+              // ======================================================
+              // 🔴 [END] TILE: Logout
+              // ======================================================
             ],
           ),
         ),

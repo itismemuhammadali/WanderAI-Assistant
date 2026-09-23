@@ -243,14 +243,20 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ],
           ),
-          // Route Toggle Bar at Top (Teacher Defense: AppConfig.enableDualRoutes)
+          // ======================================================
+          // 🔴 [START] COMPONENT: Route Toggle Bar at Top (Dual Routes)
+          // DESCRIPTION: Toggle buttons to switch between Fastest (KKH) and Scenic (Naran).
+          // 🎓 TEACHER SAYS: "Remove the route switcher toggle!"
+          //    METHOD 1: Set AppConfig.enableDualRoutes = false; in lib/core/app_config.dart
+          //    METHOD 2: Comment out lines from [START] to [END] of this block.
+          // ======================================================
           if (AppConfig.enableDualRoutes)
             Positioned(
               top: 16,
               left: 16,
               right: 16,
               child: Container(
-              padding: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -333,7 +339,16 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ),
-          // Route Details Floating Card at Bottom
+          // ======================================================
+          // 🔴 [END] COMPONENT: Route Toggle Bar at Top
+          // ======================================================
+
+          // ======================================================
+          // 🔴 [START] CARD: Route Details Floating Bottom Card
+          // DESCRIPTION: Bottom summary card showing duration, distance, and action buttons.
+          // 🎓 TO HIDE THIS CARD:
+          //    Comment out lines from [START] to [END] of this block.
+          // ======================================================
           Positioned(
             bottom: 24,
             left: 16,
@@ -445,6 +460,9 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ),
+          // ======================================================
+          // 🔴 [END] CARD: Route Details Floating Bottom Card
+          // ======================================================
         ],
       ),
     );

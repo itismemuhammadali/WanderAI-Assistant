@@ -17,13 +17,31 @@ Assalam o Alaikum Muhammad Ali! Ye guide aapke kal k exam aur viva presentation 
 
 ---
 
-### Scenario 2: Teacher says "Onboarding screens hatao, direct login ya home pe jao!"
-* **5 Second Fix**: Open `lib/core/app_config.dart`
+### Scenario 1B: Teacher says "Sign Up screen hata do, sirf Login rehne do (dono aik file me hain)!"
+* **Option 1 (Instant Master Toggle)**: Open `lib/core/app_config.dart`
   Change:
   ```dart
-  static bool skipOnboarding = true;
+  static bool allowSignUp = false;
   ```
-  Hot reload karein. Onboarding screen mukammal bypass ho jayegi.
+  Is se Sign Up switch aur Full Name field automatically gayab ho jayegi aur app 100% Login Only ban jayegi.
+* **Option 2 (Direct Code Commenting)**:
+  Open `lib/screens/login_signup_screen.dart`
+  Press `Cmd + F` aur search karein:
+  `🔴 [START] TOGGLE: Sign In / Sign Up Mode Switcher`
+  Us block ko START se END tak comment out kar dein. Screen se Sign Up switch remove ho jayega.
+
+---
+
+### Pro Search Trick: 1 Second Component Jump in VS Code
+Aap app k kisi bhi button ya component ko 1 second me find kar sakte hain:
+1. VS Code me `Cmd + Shift + F` (Mac) ya `Ctrl + Shift + F` (Windows) press karein.
+2. Search box me type karein:
+   ```
+   🔴 [START]
+   ```
+3. Poori application k saare buttons, fields, carousels aur cards line se samne aa jayenge. Har block k upar exact instructions likhi hain k isay hide kaise karna hai.
+
+---
 
 ---
 

@@ -24,7 +24,31 @@ class AppConfig {
   static bool fastSplash = false;
 
   // --------------------------------------------------------------------------
-  // 2. FEATURE TOGGLES (Hide/Show specific features in 1 second)
+  // 2. AUTHENTICATION & LOGIN/SIGNUP SPECIFIC CONTROLS
+  // --------------------------------------------------------------------------
+
+  /// Allow user to switch to Sign Up mode.
+  /// 🎓 TEACHER SAYS: "Remove the Sign Up screen/feature! We only want Login!"
+  /// -> SET THIS TO FALSE! The Sign Up toggle disappears and screen is 100% Login-only.
+  static bool allowSignUp = true;
+
+  /// Allow "Continue as Guest" bypass button.
+  /// 🎓 TEACHER SAYS: "Remove guest login, force user to enter credentials!"
+  /// -> SET THIS TO FALSE!
+  static bool allowGuestLogin = true;
+
+  /// Allow "Demo Fill" autofill chip button.
+  /// 🎓 TEACHER SAYS: "Remove the demo autofill button!"
+  /// -> SET THIS TO FALSE!
+  static bool allowDemoFill = true;
+
+  /// Allow "Forgot Password" link on login screen.
+  /// 🎓 TEACHER SAYS: "Remove forgot password!"
+  /// -> SET THIS TO FALSE!
+  static bool allowForgotPassword = true;
+
+  // --------------------------------------------------------------------------
+  // 3. FEATURE TOGGLES (Hide/Show specific features in 1 second)
   // --------------------------------------------------------------------------
 
   /// Enable or disable AI Travel Assistant Chatbot tab/floating button.
@@ -49,7 +73,7 @@ class AppConfig {
   static bool enablePrePlannedTrips = true;
 
   // --------------------------------------------------------------------------
-  // 3. DEMO FAST CREDENTIALS (Quick fill to avoid typing live during viva)
+  // 4. DEMO FAST CREDENTIALS (Quick fill to avoid typing live during viva)
   // --------------------------------------------------------------------------
 
   static const String demoEmail = "ali.traveler@example.com";
@@ -57,7 +81,7 @@ class AppConfig {
   static const String demoName = "Muhammad Ali";
 
   // --------------------------------------------------------------------------
-  // 4. BACKEND CONNECTION INFO
+  // 5. BACKEND CONNECTION INFO
   // --------------------------------------------------------------------------
   static const String backendBaseUrl = "http://localhost:8000";
   static const String supabaseProjectUrl = "https://ownqlxoygmlsqrechjkv.supabase.co";

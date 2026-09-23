@@ -39,6 +39,12 @@ class BookingConfirmationScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // ======================================================
+              // 🔴 [START] COMPONENT: Booking Success Checkmark Icon & Header
+              // DESCRIPTION: Large green checkmark indicator confirming booking was received.
+              // 🎓 TO HIDE THIS COMPONENT:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
@@ -63,7 +69,18 @@ class BookingConfirmationScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
+              // ======================================================
+              // 🔴 [END] COMPONENT: Booking Success Checkmark Icon & Header
+              // ======================================================
+
               const SizedBox(height: 32),
+
+              // ======================================================
+              // 🔴 [START] CARD: Booking Summary & Traveler Information
+              // DESCRIPTION: Displays itinerary name, duration, customer phone, pickup details, and total price.
+              // 🎓 TO HIDE THIS CARD:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               Expanded(
                 child: SingleChildScrollView(
                   child: Container(
@@ -82,13 +99,13 @@ class BookingConfirmationScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Trip Details', style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+                        const Text('Trip Details', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 12),
                         Text('Destination: ${destination["name"] ?? "N/A"}', style: Theme.of(context).textTheme.bodyMedium),
                         const SizedBox(height: 6),
                         Text('Duration: $tripDuration', style: Theme.of(context).textTheme.bodyMedium),
                         const SizedBox(height: 16),
-                        Text('Traveler Information', style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+                        const Text('Traveler Information', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 12),
                         Text('Full Name: $fullName', style: Theme.of(context).textTheme.bodyMedium),
                         const SizedBox(height: 6),
@@ -121,7 +138,18 @@ class BookingConfirmationScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              // ======================================================
+              // 🔴 [END] CARD: Booking Summary & Traveler Information
+              // ======================================================
+
               const SizedBox(height: 24),
+
+              // ======================================================
+              // 🔴 [START] BUTTON: Back to Home Button
+              // DESCRIPTION: Resets navigation stack and returns to Main Shell Dashboard.
+              // 🎓 TO HIDE THIS BUTTON:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -131,6 +159,9 @@ class BookingConfirmationScreen extends StatelessWidget {
                   child: const Text('Back to Home'),
                 ),
               ),
+              // ======================================================
+              // 🔴 [END] BUTTON: Back to Home Button
+              // ======================================================
             ],
           ),
         ),

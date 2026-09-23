@@ -1,19 +1,21 @@
 // ============================================================================
 // SCREEN: Login & Sign Up Screen
 // FILE: lib/screens/login_signup_screen.dart
-// PURPOSE: Authentication screen with Sign In, Sign Up, Guest Bypass, & Demo Autofill.
+// PURPOSE: Unified authentication screen supporting Sign In, Sign Up, Guest Bypass,
+//          and Demo Autofill for rapid viva testing.
 //
 // 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
-// 1. TEACHER: "Login screen hatao! Mujhe direct Main/Home screen dikhao!"
-//    - OPTION 1 (Instant): In lib/core/app_config.dart, set:
-//        AppConfig.requireLogin = false;
-//    - OPTION 2 (Main Route): In lib/main.dart, change:
-//        initialRoute: AppRoutes.mainShell,
-//    - OPTION 3 (Live UI): Just tap the "Continue as Guest" button on this screen!
-// 2. TEACHER: "Check karo validation chalti hai ya nahi?"
-//    - Empty fields will trigger clear red validation messages immediately.
-// 3. TEACHER: "Jaldi se login karo time nahi hai!"
-//    - Tap "Demo Credentials" chip to auto-populate email & password instantly!
+// 1. TEACHER: "Login screen poori app se hatao! Direct Home dikhao!"
+//    -> In lib/core/app_config.dart, set: AppConfig.requireLogin = false;
+//    -> Or in lib/main.dart, set: initialRoute: AppRoutes.mainShell;
+//
+// 2. TEACHER: "Sign Up hata do, app me sirf Login hona chahiye!"
+//    -> In lib/core/app_config.dart, set: AppConfig.allowSignUp = false;
+//    -> Or comment out the Toggle block at the bottom (clearly marked below)!
+//
+// 3. TEACHER: "Guest Login button hata do!"
+//    -> In lib/core/app_config.dart, set: AppConfig.allowGuestLogin = false;
+//    -> Or comment out the Guest Button block (clearly marked below)!
 // ============================================================================
 
 import 'package:flutter/material.dart';
@@ -34,7 +36,9 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  bool isLogin = true;
+  // If allowSignUp is disabled in AppConfig, force isLogin to true permanently
+  bool get isLogin => AppConfig.allowSignUp ? _isLoginMode : true;
+  bool _isLoginMode = true;
   bool _obscurePassword = true;
   bool _isLoading = false;
 
@@ -56,10 +60,10 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Demo credentials filled successfully'),
+      const SnackBar(
+        content: Text('Demo credentials filled successfully'),
         backgroundColor: AppTheme.accentTeal,
-        duration: const Duration(seconds: 2),
+        duration: Duration(seconds: 2),
       ),
     );
   }
@@ -111,6 +115,8 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
+
+                  // Header Row with App Logo and Demo Fill Button
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -122,17 +128,30 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                         ),
                         child: const Icon(Icons.flight_takeoff, size: 36, color: Colors.white),
                       ),
-                      // Quick Demo Pill for fast viva testing
-                      ActionChip(
-                        avatar: const Icon(Icons.flash_on, size: 18, color: Colors.amber),
-                        label: const Text('Demo Fill', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                        backgroundColor: Colors.amber.withValues(alpha: 0.15),
-                        side: BorderSide(color: Colors.amber.shade400),
-                        onPressed: _fillDemoCredentials,
-                      ),
+
+                      // ======================================================
+                      // 🔴 [START] BUTTON: Demo Credentials Quick Fill Chip
+                      // DESCRIPTION: Automatically inputs valid email & password.
+                      // 🎓 TO HIDE THIS BUTTON:
+                      //    METHOD 1: Set AppConfig.allowDemoFill = false; in lib/core/app_config.dart
+                      //    METHOD 2: Comment out lines from [START] to [END] of this block.
+                      // ======================================================
+                      if (AppConfig.allowDemoFill)
+                        ActionChip(
+                          avatar: const Icon(Icons.flash_on, size: 18, color: Colors.amber),
+                          label: const Text('Demo Fill', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                          backgroundColor: Colors.amber.withValues(alpha: 0.15),
+                          side: BorderSide(color: Colors.amber.shade400),
+                          onPressed: _fillDemoCredentials,
+                        ),
+                      // ======================================================
+                      // 🔴 [END] BUTTON: Demo Credentials Quick Fill Chip
+                      // ======================================================
                     ],
                   ),
                   const SizedBox(height: 24),
+
+                  // Screen Title
                   Text(
                     isLogin ? 'Welcome back' : 'Create an account',
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
@@ -141,6 +160,8 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                         ),
                   ),
                   const SizedBox(height: 8),
+
+                  // Screen Subtitle
                   Text(
                     isLogin
                         ? 'Sign in to access your planned trips and personalized AI recommendations'
@@ -151,7 +172,12 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Name Field (Sign Up Only)
+                  // ======================================================
+                  // 🔴 [START] INPUT: Full Name Field (Sign Up Only)
+                  // DESCRIPTION: Input field for new user registration.
+                  // 🎓 TO HIDE THIS INPUT:
+                  //    Comment out lines from [START] to [END] of this block.
+                  // ======================================================
                   if (!isLogin) ...[
                     TextFormField(
                       controller: _nameController,
@@ -169,8 +195,16 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                     ),
                     const SizedBox(height: 16),
                   ],
+                  // ======================================================
+                  // 🔴 [END] INPUT: Full Name Field
+                  // ======================================================
 
-                  // Email Field
+                  // ======================================================
+                  // 🔴 [START] INPUT: Email Address Field
+                  // DESCRIPTION: Input for user account email.
+                  // 🎓 TO HIDE THIS INPUT:
+                  //    Comment out lines from [START] to [END] of this block.
+                  // ======================================================
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -189,9 +223,17 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                       return null;
                     },
                   ),
+                  // ======================================================
+                  // 🔴 [END] INPUT: Email Address Field
+                  // ======================================================
                   const SizedBox(height: 16),
 
-                  // Password Field
+                  // ======================================================
+                  // 🔴 [START] INPUT: Password Field (with Show/Hide Toggle)
+                  // DESCRIPTION: Obscured password input with visibility toggle.
+                  // 🎓 TO HIDE THIS INPUT:
+                  //    Comment out lines from [START] to [END] of this block.
+                  // ======================================================
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
@@ -221,25 +263,42 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                       return null;
                     },
                   ),
+                  // ======================================================
+                  // 🔴 [END] INPUT: Password Field
+                  // ======================================================
 
-                  // Forgot Password (Sign In Only)
-                  if (isLogin) ...[
+                  // ======================================================
+                  // 🔴 [START] BUTTON: Forgot Password Text Button
+                  // DESCRIPTION: Navigates to the password recovery screen.
+                  // 🎓 TO HIDE THIS BUTTON:
+                  //    METHOD 1: Set AppConfig.allowForgotPassword = false; in lib/core/app_config.dart
+                  //    METHOD 2: Comment out lines from [START] to [END] of this block.
+                  // ======================================================
+                  if (isLogin && AppConfig.allowForgotPassword) ...[
                     const SizedBox(height: 12),
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () => Navigator.of(context).pushNamed(AppRoutes.forgotPassword),
-                        child: Text(
+                        child: const Text(
                           'Forgot Password?',
                           style: TextStyle(color: AppTheme.accentTeal, fontWeight: FontWeight.w600),
                         ),
                       ),
                     ),
                   ],
+                  // ======================================================
+                  // 🔴 [END] BUTTON: Forgot Password Text Button
+                  // ======================================================
 
                   const SizedBox(height: 24),
 
-                  // Primary Submit Button
+                  // ======================================================
+                  // 🔴 [START] BUTTON: Primary Sign In / Sign Up Submit Button
+                  // DESCRIPTION: Submits the credentials and proceeds to MainShell.
+                  // 🎓 TO HIDE THIS BUTTON:
+                  //    Comment out lines from [START] to [END] of this block.
+                  // ======================================================
                   SizedBox(
                     width: double.infinity,
                     height: 52,
@@ -257,50 +316,74 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                             ),
                     ),
                   ),
+                  // ======================================================
+                  // 🔴 [END] BUTTON: Primary Sign In / Sign Up Submit Button
+                  // ======================================================
 
                   const SizedBox(height: 12),
 
-                  // Guest Bypass Button (Teacher Defense Feature)
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.person_pin_circle_outlined),
-                      label: const Text(
-                        'Continue as Guest',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  // ======================================================
+                  // 🔴 [START] BUTTON: Continue as Guest (Viva Emergency Bypass)
+                  // DESCRIPTION: Instantly bypasses authentication directly into Home.
+                  // 🎓 TO HIDE THIS BUTTON:
+                  //    METHOD 1: Set AppConfig.allowGuestLogin = false; in lib/core/app_config.dart
+                  //    METHOD 2: Comment out lines from [START] to [END] of this block.
+                  // ======================================================
+                  if (AppConfig.allowGuestLogin)
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: OutlinedButton.icon(
+                        icon: const Icon(Icons.person_pin_circle_outlined),
+                        label: const Text(
+                          'Continue as Guest',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                        ),
+                        onPressed: _continueAsGuest,
                       ),
-                      onPressed: _continueAsGuest,
                     ),
-                  ),
+                  // ======================================================
+                  // 🔴 [END] BUTTON: Continue as Guest
+                  // ======================================================
 
                   const SizedBox(height: 24),
 
-                  // Toggle between Sign In and Sign Up
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        isLogin ? 'Don\'t have an account?' : 'Already have an account?',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            isLogin = !isLogin;
-                            _formKey.currentState?.reset();
-                          });
-                        },
-                        child: Text(
-                          isLogin ? 'Sign Up' : 'Sign In',
-                          style: const TextStyle(
-                            color: AppTheme.accentTeal,
-                            fontWeight: FontWeight.bold,
+                  // ======================================================
+                  // 🔴 [START] COMPONENT: Sign Up / Sign In Toggle Switcher
+                  // DESCRIPTION: Toggles between Login and Registration mode.
+                  // 🎓 TEACHER SAYS: "Remove the Sign Up screen/feature entirely!"
+                  //    METHOD 1: Set AppConfig.allowSignUp = false; in lib/core/app_config.dart
+                  //    METHOD 2: Comment out lines from [START] to [END] of this block.
+                  //    RESULT: User will only ever see Sign In. Sign Up is 100% hidden.
+                  // ======================================================
+                  if (AppConfig.allowSignUp)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          isLogin ? 'Don\'t have an account?' : 'Already have an account?',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _isLoginMode = !_isLoginMode;
+                              _formKey.currentState?.reset();
+                            });
+                          },
+                          child: Text(
+                            isLogin ? 'Sign Up' : 'Sign In',
+                            style: const TextStyle(
+                              color: AppTheme.accentTeal,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  // ======================================================
+                  // 🔴 [END] COMPONENT: Sign Up / Sign In Toggle Switcher
+                  // ======================================================
                 ],
               ),
             ),

@@ -5,12 +5,9 @@
 //          toggle, "View Pre-Planned Trips", and "Ask AI Assistant About This Place".
 //
 // 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
-// 1. TEACHER: "Destination Detail se 'Ask AI' button hatao!"
-//    - Comment out the OutlinedButton around Line 215!
-// 2. TEACHER: "Favorite / Heart icon hata do!"
-//    - Comment out the bookmark IconButton at Line 120!
-// 3. TEACHER: "Pre-planned trips button hatao!"
-//    - Comment out the primary ElevatedButton at Line 195!
+// To remove or hide ANY component on this screen, find its conspicuous
+// 🔴 [START] and 🔴 [END] comment banners below. Each banner gives you
+// exact instructions on how to comment it out or toggle it!
 // ============================================================================
 
 import 'package:flutter/material.dart';
@@ -65,29 +62,50 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
           SliverAppBar(
             expandedHeight: 400,
             pinned: true,
+            // ======================================================
+            // 🔴 [START] BUTTON: Back Arrow Icon
+            // DESCRIPTION: Pops back to previous screen (Home or Trips).
+            // 🎓 TO HIDE THIS BUTTON:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
               onPressed: () => Navigator.pop(context),
             ),
+            // ======================================================
+            // 🔴 [END] BUTTON: Back Arrow Icon
+            // ======================================================
+
             actions: [
-              IconButton(
-                icon: Icon(
-                  _isSaved ? Icons.bookmark : Icons.bookmark_outline,
-                  color: Colors.white,
-                  size: 28,
-                ),
-                onPressed: () {
-                  _savedPlacesService.togglePlace(_destination);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        _isSaved ? 'Removed from saved places' : 'Added to saved places',
+              // ======================================================
+              // 🔴 [START] BUTTON: Save / Bookmark Place Icon
+              // DESCRIPTION: Saves or removes this destination from wishlist.
+              // 🎓 TO HIDE THIS BUTTON:
+              //    METHOD 1: Set AppConfig.enableSavedPlaces = false; in lib/core/app_config.dart
+              //    METHOD 2: Comment out lines from [START] to [END] of this block.
+              // ======================================================
+              if (AppConfig.enableSavedPlaces)
+                IconButton(
+                  icon: Icon(
+                    _isSaved ? Icons.bookmark : Icons.bookmark_outline,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                  onPressed: () {
+                    _savedPlacesService.togglePlace(_destination);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          _isSaved ? 'Removed from saved places' : 'Added to saved places',
+                        ),
+                        duration: const Duration(seconds: 2),
                       ),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                ),
+              // ======================================================
+              // 🔴 [END] BUTTON: Save / Bookmark Place Icon
+              // ======================================================
             ],
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
@@ -167,6 +185,8 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
+
+                  // Info Chips (Price and Distance)
                   Row(
                     children: [
                       _buildInfoChip(context, Icons.account_balance_wallet, 'PKR ${_destination["price"]}'),
@@ -175,6 +195,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
+
                   Text('About', style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 12),
                   Text(
@@ -182,6 +203,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.5),
                   ),
                   const SizedBox(height: 24),
+
                   Text('Tags', style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 12),
                   Wrap(
@@ -195,47 +217,76 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                       );
                     }).toList(),
                   ),
-                  const SizedBox(height: 100), // Space for bottom button
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
           ),
         ],
       ),
+
+      // ======================================================
+      // 🔴 [START] BOTTOM BAR: Book Now & Customize Buttons
+      // DESCRIPTION: Action bar containing "Book Now" and "Customize (AI)".
+      // 🎓 TO HIDE THESE BUTTONS:
+      //    - To hide "Book Now": Comment out the first Expanded widget below!
+      //    - To hide "Customize": Comment out the second Expanded widget below!
+      //    - Or comment out lines from [START] to [END] of this block.
+      // ======================================================
       bottomNavigationBar: Container(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
         color: Colors.white,
         child: Row(
           children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Pre-Planned Trip screen
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => PrePlannedTripScreen(destination: _destination)));
-                  },
-                  child: const Text('Book Now'),
+            // Book Now Button
+            if (AppConfig.enableBooking)
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PrePlannedTripScreen(destination: _destination),
+                        ),
+                      );
+                    },
+                    child: const Text('Book Now'),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: OutlinedButton(
-                  onPressed: () {
-                    // Navigate to Chat with pre-filled message
-                    final message = 'I am interested in visiting ${_destination["name"]} in ${_destination["country"]}. Can you help me plan my trip?';
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(initialMessage: message, destination: _destination)));
-                  },
-                  child: const Text('Customize'),
+            if (AppConfig.enableBooking && AppConfig.enableAiChat) const SizedBox(width: 12),
+
+            // Customize / AI Chat Button
+            if (AppConfig.enableAiChat)
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: OutlinedButton(
+                    onPressed: () {
+                      final message =
+                          'I am interested in visiting ${_destination["name"]} in ${_destination["country"]}. Can you help me plan my trip?';
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatScreen(
+                            initialMessage: message,
+                            destination: _destination,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text('Customize'),
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
+      // ======================================================
+      // 🔴 [END] BOTTOM BAR: Book Now & Customize Buttons
+      // ======================================================
     );
   }
 
