@@ -48,7 +48,26 @@ class _UnsplashImageState extends State<UnsplashImage> {
     'fairy meadows': 'https://images.unsplash.com/photo-1664872763520-348c1cbbade4?q=80&w=1080&auto=format&fit=crop', // Fairy Meadows Nanga Parbat
     'babusar': 'https://images.unsplash.com/photo-1627894483216-2138af692e32?q=80&w=1080&auto=format&fit=crop',
     'attabad': 'https://images.unsplash.com/photo-1612128952123-88ed13410495?q=80&w=1080&auto=format&fit=crop',
+    'taxila': 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1080&auto=format&fit=crop',
+    'nathia gali': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1080&auto=format&fit=crop',
+    'rohtas': 'https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=1080&auto=format&fit=crop',
+    'churna': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1080&auto=format&fit=crop',
+    'kumrat': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1080&auto=format&fit=crop',
+    'neelum': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1080&auto=format&fit=crop',
+    'ratti gali': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1080&auto=format&fit=crop',
+    'shogran': 'https://images.unsplash.com/photo-1627894483216-2138af692e32?q=80&w=1080&auto=format&fit=crop',
+    'kalash': 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=1080&auto=format&fit=crop',
+    'deosai': 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?q=80&w=1080&auto=format&fit=crop',
+    'khunjerab': 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?q=80&w=1080&auto=format&fit=crop',
+    'cholistan': 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=1080&auto=format&fit=crop',
+    'kund malir': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1080&auto=format&fit=crop',
+    'gorakh': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1080&auto=format&fit=crop',
+    'ziarat': 'https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=1080&auto=format&fit=crop',
+    'astola': 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=1080&auto=format&fit=crop',
+    'kalam': 'https://images.unsplash.com/photo-1668936782695-5f7657dc793d?q=80&w=1080&auto=format&fit=crop',
+
   };
+
 
   @override
   void initState() {
