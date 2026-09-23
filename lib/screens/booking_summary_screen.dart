@@ -1,3 +1,15 @@
+// ============================================================================
+// SCREEN: Booking Summary Screen
+// FILE: lib/screens/booking_summary_screen.dart
+// PURPOSE: Checkout screen calculating pricing, tax, total, and traveler contact details.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Summary screen bypass karo direct confirmation pe jao!"
+//    - From DestinationDetail or BookingScreen, pushNamed(AppRoutes.bookingConfirmation)
+// 2. TEACHER: "Base price ya Tax rate change karo!"
+//    - Look at lines 60-80 below (price breakdown section).
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../core/app_routes.dart';

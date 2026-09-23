@@ -1,3 +1,16 @@
+// ============================================================================
+// SCREEN: Filters Screen
+// FILE: lib/screens/filters_screen.dart
+// PURPOSE: Filter search results by Region (Gilgit-Baltistan, KPK, Punjab, Sindh,
+//          Balochistan), Duration, Budget range (PKR), and Activity types.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Filters screen hatao!"
+//    - In lib/core/app_config.dart, set: AppConfig.enableFilters = false;
+// 2. TEACHER: "Budget slider limits change karo!"
+//    - Look at lines 60-80 below (min/max RangeValues).
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 

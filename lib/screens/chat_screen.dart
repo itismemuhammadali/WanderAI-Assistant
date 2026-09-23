@@ -1,9 +1,28 @@
+// ============================================================================
+// SCREEN: AI Travel Assistant Chat Screen
+// FILE: lib/screens/chat_screen.dart
+// PURPOSE: Conversational AI interface for personalized travel planning, itinerary
+//          recommendations, interactive mini-maps, and live route generation.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Chat Screen poori app se hatao!"
+//    - In lib/core/app_config.dart, set:
+//        AppConfig.enableAiChat = false;  (Disappears from bottom bar & home screen!)
+// 2. TEACHER: "Agar backend/API fail ho jaye to kya hoga?"
+//    - Explain: "Sir, this screen has automated local fallback heuristics! Even if
+//      the Python backend or internet drops, it gracefully parses destination keywords
+//      and renders responsive travel recommendations without crashing."
+// 3. TEACHER: "Chat clear karne ka option do!"
+//    - Call `setState(() { _messages.clear(); _initializeChat(); });`
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../core/theme.dart';
 import '../core/dummy_data.dart';
 import '../core/api_service.dart';
+import '../core/app_config.dart';
 import '../widgets/custom_app_bar.dart';
 import 'map_screen.dart';
 

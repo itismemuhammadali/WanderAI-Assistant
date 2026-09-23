@@ -1,8 +1,25 @@
+// ============================================================================
+// APP THEME & DESIGN TOKENS
+// FILE: lib/core/theme.dart
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "App ka color blue se change karo! Green ya Purple ya Red karo!"
+//    - Change `primaryBlue` (Line 24) and `accentTeal` (Line 27) below:
+//      * Emerald Green: primaryBlue = Color(0xFF064E3B), accentTeal = Color(0xFF10B981);
+//      * Royal Purple:  primaryBlue = Color(0xFF2E1065), accentTeal = Color(0xFF8B5CF6);
+//      * Sunset Crimson: primaryBlue = Color(0xFF7F1D1D), accentTeal = Color(0xFFF97316);
+//      * Standard Blue: primaryBlue = Color(0xFF0F2027), accentTeal = Color(0xFF00B4DB);
+// 2. TEACHER: "Font ya button corners change karo!"
+//    - Button radius: Line 85 (change 16 to 8 for sharp, 24 for pill-shaped)
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Colors
+  // --------------------------------------------------------------------------
+  // Primary Palette
+  // --------------------------------------------------------------------------
   static const Color primaryBlue = Color(0xFF0F2027); // Deep Blue
   static const Color secondaryBlue = Color(0xFF203A43); // Medium Blue
   static const Color teal = Color(0xFF2C5364); // Teal / Dark Aqua

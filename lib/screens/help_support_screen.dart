@@ -1,3 +1,15 @@
+// ============================================================================
+// SCREEN: Help & Support Screen (FAQs & Contact)
+// FILE: lib/screens/help_support_screen.dart
+// PURPOSE: Expandable FAQ accordion, direct email support launcher, and contact form.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "FAQ expand/collapse demo karo!"
+//    - Tap any question in the accordion to animate open the answer!
+// 2. TEACHER: "Naya FAQ add karo!"
+//    - In `_faqs` list at Line 25 below!
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../widgets/custom_app_bar.dart';

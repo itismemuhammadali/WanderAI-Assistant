@@ -1,6 +1,25 @@
+// ============================================================================
+// MAIN APPLICATION ENTRY POINT
+// FILE: lib/main.dart
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "App shuru hote hi direct Main Screen (Home) dikhao! Splash/Login hatao!"
+//    - Change Line 36 below:
+//      initialRoute: AppRoutes.splash,  --->  initialRoute: AppRoutes.mainShell,
+//
+// 2. TEACHER: "App shuru hote hi direct Login dikhao!"
+//    - Change Line 36 below:
+//      initialRoute: AppRoutes.splash,  --->  initialRoute: AppRoutes.loginSignup,
+//
+// 3. TEACHER: "Kisi screen ko routes se permanently disable/redirect karna hai?"
+//    - Change the destination widget in the `routes` map (Line 38-51).
+//      Example: AppRoutes.onboarding: (context) => const MainShell(),
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import 'core/theme.dart';
 import 'core/app_routes.dart';
+import 'core/app_config.dart';
 import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/login_signup_screen.dart';
@@ -26,7 +45,14 @@ class TravelAssistantApp extends StatelessWidget {
       title: 'AI Travel Assistant',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+
+      // 🎓 TEACHER TRICK: Change initialRoute to test any screen instantly:
+      // - AppRoutes.splash (Default flow: Splash -> Onboarding -> Login -> Home)
+      // - AppRoutes.mainShell (Instant bypass to Home Screen)
+      // - AppRoutes.loginSignup (Instant Login Screen)
+      // - AppRoutes.mapScreen (Instant Map Screen)
       initialRoute: AppRoutes.splash,
+
       routes: {
         AppRoutes.splash: (context) => const SplashScreen(),
         AppRoutes.onboarding: (context) => const OnboardingScreen(),

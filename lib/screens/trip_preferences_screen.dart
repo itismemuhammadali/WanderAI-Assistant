@@ -1,3 +1,16 @@
+// ============================================================================
+// SCREEN: Trip Preferences Screen
+// FILE: lib/screens/trip_preferences_screen.dart
+// PURPOSE: Set travel companions (Solo, Couple, Family, Friends) and vacation moods
+//          (Relaxing, Romantic, Adventure, Cultural, Foodie, Nature).
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Preferences screen hata do!"
+//    - Remove link from ProfileScreen or MapScreen!
+// 2. TEACHER: "Naya travel mood add karo!"
+//    - Look at `_selectedMoods` and mood chips list around Line 80.
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../widgets/custom_app_bar.dart';

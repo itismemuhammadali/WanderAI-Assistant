@@ -1,3 +1,16 @@
+// ============================================================================
+// SCREEN: User Profile Screen
+// FILE: lib/screens/profile_screen.dart
+// PURPOSE: Displays user avatar, account details, and navigation links to My Bookings,
+//          Saved Places, Travel Preferences, Help & Support, and Logout dialog.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Profile Screen se koi option hata do (e.g. Help & Support ya My Bookings)!"
+//    - Look at the ListTiles in the build method (Lines 60-110). Comment out any tile!
+// 2. TEACHER: "Logout dialog ka confirmation bypass karo!"
+//    - Call `Navigator.of(context).pushReplacementNamed(AppRoutes.loginSignup);` directly.
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../widgets/custom_app_bar.dart';

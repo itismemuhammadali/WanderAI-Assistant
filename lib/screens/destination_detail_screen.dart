@@ -1,8 +1,24 @@
+// ============================================================================
+// SCREEN: Destination Detail Screen
+// FILE: lib/screens/destination_detail_screen.dart
+// PURPOSE: Full-bleed hero image, dynamic ratings, highlights, pricing, saved places
+//          toggle, "View Pre-Planned Trips", and "Ask AI Assistant About This Place".
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Destination Detail se 'Ask AI' button hatao!"
+//    - Comment out the OutlinedButton around Line 215!
+// 2. TEACHER: "Favorite / Heart icon hata do!"
+//    - Comment out the bookmark IconButton at Line 120!
+// 3. TEACHER: "Pre-planned trips button hatao!"
+//    - Comment out the primary ElevatedButton at Line 195!
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import 'pre_planned_trip_screen.dart';
 import 'chat_screen.dart';
 import '../core/saved_places_service.dart';
+import '../core/app_config.dart';
 import '../widgets/unsplash_image.dart';
 
 class DestinationDetailScreen extends StatefulWidget {

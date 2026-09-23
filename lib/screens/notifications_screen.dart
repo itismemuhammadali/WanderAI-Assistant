@@ -1,3 +1,16 @@
+// ============================================================================
+// SCREEN: Notifications Screen
+// FILE: lib/screens/notifications_screen.dart
+// PURPOSE: Displays booking updates, flight/tour alerts, AI recommendations, and
+//          offers with mark-all-as-read and clear-all capabilities.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Notifications screen hatao!"
+//    - In lib/core/app_config.dart, set: AppConfig.enableNotifications = false;
+// 2. TEACHER: "Clear All ya Mark All As Read demo karo!"
+//    - Tap the 'Clear All' button on the top right action bar!
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../widgets/custom_app_bar.dart';

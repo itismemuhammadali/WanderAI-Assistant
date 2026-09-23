@@ -1,7 +1,29 @@
+// ============================================================================
+// SCREEN: Home Screen (Discover)
+// FILE: lib/screens/home_screen.dart
+// PURPOSE: Primary dashboard displaying Top Picks, Quick Action buttons, Trips & Tours,
+//          Popular Destinations across Pakistan, and Featured Collections.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Book a Trip button ya Messages button hatao!"
+//    - In lib/core/app_config.dart, set:
+//        AppConfig.enableBooking = false; (hides Book a Trip)
+//        AppConfig.enableAiChat = false;  (hides Messages / AI)
+//    - Or comment out Lines 130-155 below!
+//
+// 2. TEACHER: "Notifications icon header se hata do!"
+//    - In lib/core/app_config.dart, set AppConfig.enableNotifications = false;
+//    - Or remove the IconButton at Line 42!
+//
+// 3. TEACHER: "Top Picks ya Featured Collections section hata do!"
+//    - Comment out Lines 70-125 (Top Picks) or Lines 220-275 (Featured Collections)!
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../core/dummy_data.dart';
 import '../core/app_routes.dart';
+import '../core/app_config.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/destination_card.dart';
 import '../widgets/unsplash_image.dart';
@@ -18,12 +40,13 @@ class HomeScreen extends StatelessWidget {
       appBar: CustomAppBar(
         title: 'Discover',
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none),
-            onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.notificationsScreen);
-            },
-          ),
+          if (AppConfig.enableNotifications)
+            IconButton(
+              icon: const Icon(Icons.notifications_none),
+              onPressed: () {
+                Navigator.pushNamed(context, AppRoutes.notificationsScreen);
+              },
+            ),
           const SizedBox(width: 8),
         ],
       ),
@@ -124,31 +147,33 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 32),
               Row(
                 children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingScreen()));
-                      },
-                      icon: const Icon(Icons.flight_takeoff),
-                      label: const Text('Book a Trip'),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                  if (AppConfig.enableBooking)
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingScreen()));
+                        },
+                        icon: const Icon(Icons.flight_takeoff),
+                        label: const Text('Book a Trip'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatScreen()));
-                      },
-                      icon: const Icon(Icons.chat_bubble_outline),
-                      label: const Text('Messages'),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                  if (AppConfig.enableBooking && AppConfig.enableAiChat) const SizedBox(width: 16),
+                  if (AppConfig.enableAiChat)
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatScreen()));
+                        },
+                        icon: const Icon(Icons.chat_bubble_outline),
+                        label: const Text('Messages'),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
               const SizedBox(height: 32),

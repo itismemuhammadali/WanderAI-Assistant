@@ -1,3 +1,16 @@
+// ============================================================================
+// SCREEN: Route Attractions Screen
+// FILE: lib/screens/route_attractions_screen.dart
+// PURPOSE: Displays wayside tourist spots along the travel highway (e.g. Taxila,
+//          Rohtas Fort, Katas Raj, Babusar Pass, Rakaposhi viewpoint).
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Route Attractions screen hatao!"
+//    - Remove the navigation call from MapScreen or DestinationDetailScreen.
+// 2. TEACHER: "Nayi attraction add karo ya distance change karo!"
+//    - In lib/core/dummy_data.dart -> `routeAttractions` list!
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../core/dummy_data.dart';

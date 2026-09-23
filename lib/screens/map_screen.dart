@@ -1,3 +1,19 @@
+// ============================================================================
+// SCREEN: Interactive Map Screen
+// FILE: lib/screens/map_screen.dart
+// PURPOSE: OpenStreetMap / FlutterMap view of Pakistan with real-time GPS location,
+//          dual route polylines (Fastest KKH vs Scenic Naran Babusar), attraction pins,
+//          and quick trip planning bottom sheet.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Map Screen bottom bar se hata do!"
+//    - In lib/screens/main_shell.dart, comment out the Map item in navItems.
+// 2. TEACHER: "Fast vs Scenic route switcher hatao, sirf ek route dikhao!"
+//    - Set _selectedRoute = 'fast'; and comment out the route switcher toggle widget.
+// 3. TEACHER: "Map pins/markers change karo ya add karo!"
+//    - Look at _fastestRoutePoints (Line 46) or attractions list (Line 120).
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -6,6 +22,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../core/theme.dart';
 import '../core/dummy_data.dart';
 import '../core/app_routes.dart';
+import '../core/app_config.dart';
 import '../widgets/custom_app_bar.dart';
 import 'trip_preferences_screen.dart';
 
@@ -226,12 +243,13 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ],
           ),
-          // Route Toggle Bar at Top
-          Positioned(
-            top: 16,
-            left: 16,
-            right: 16,
-            child: Container(
+          // Route Toggle Bar at Top (Teacher Defense: AppConfig.enableDualRoutes)
+          if (AppConfig.enableDualRoutes)
+            Positioned(
+              top: 16,
+              left: 16,
+              right: 16,
+              child: Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: Colors.white,

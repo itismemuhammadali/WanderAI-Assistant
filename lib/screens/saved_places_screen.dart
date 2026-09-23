@@ -1,3 +1,16 @@
+// ============================================================================
+// SCREEN: Saved Places Screen (Bookmarks / Wishlist)
+// FILE: lib/screens/saved_places_screen.dart
+// PURPOSE: Displays user's bookmarked destinations across Pakistan, filterable by
+//          All, Mountains, Lakes, and Heritage sites with swipe to delete.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Saved Places screen hatao!"
+//    - In lib/core/app_config.dart, set: AppConfig.enableSavedPlaces = false;
+// 2. TEACHER: "Wishlist empty state kaisa dikhta hai?"
+//    - Clear bookmarks via `_savedPlacesService.clearAll()` to demo empty state.
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../widgets/custom_app_bar.dart';

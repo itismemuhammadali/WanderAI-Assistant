@@ -1,6 +1,14 @@
+// ============================================================================
+// SCREEN: Forgot Password Screen
+// FILE: lib/screens/forgot_password_screen.dart
+// PURPOSE: Email recovery form with password reset link notification.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Forgot password link hatao!"
+//    - In lib/screens/login_signup_screen.dart, comment out the "Forgot Password?" TextButton!
+// ============================================================================
+
 import 'package:flutter/material.dart';
-import '../core/theme.dart';
-import '../core/app_routes.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);

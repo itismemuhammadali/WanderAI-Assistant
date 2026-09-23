@@ -1,3 +1,16 @@
+// ============================================================================
+// SCREEN: Trip Itineraries Screen (Custom AI Generated Options)
+// FILE: lib/screens/trip_itineraries_screen.dart
+// PURPOSE: Displays 3 customized travel packages (Budget, Balanced, Luxury)
+//          generated based on travelers, vehicle choice, and hotel preference.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Itineraries screen hata do!"
+//    - Navigate directly to BookingSummaryScreen from BookingScreen!
+// 2. TEACHER: "Package pricing multiplier change karo!"
+//    - Look at lines 40-70 below (price calculation methods).
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import 'booking_details_screen.dart';

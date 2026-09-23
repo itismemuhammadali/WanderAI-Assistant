@@ -1,3 +1,16 @@
+// ============================================================================
+// SCREEN: Trips & Tours Listing Screen
+// FILE: lib/screens/trips_screen.dart
+// PURPOSE: Full catalog of all 25+ Pakistani tour packages with search bar,
+//          price sorting (Low to High / High to Low), and filter modal integration.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Sort dropdown ya search bar hata do!"
+//    - Search bar: Lines 50-70. Sort chips: Lines 72-100.
+// 2. TEACHER: "Pakistani tour packages kahan se load hote hain?"
+//    - From lib/core/dummy_data.dart (`popularDestinations` list) or live Supabase API!
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../core/dummy_data.dart';

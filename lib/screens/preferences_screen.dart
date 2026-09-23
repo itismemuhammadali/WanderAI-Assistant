@@ -1,3 +1,13 @@
+// ============================================================================
+// SCREEN: Preferences Screen
+// FILE: lib/screens/preferences_screen.dart
+// PURPOSE: Global preference configuration for trip planning algorithms.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Preferences screen hatao!"
+//    - In lib/core/app_config.dart, set: AppConfig.enablePreferences = false;
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../core/dummy_data.dart';

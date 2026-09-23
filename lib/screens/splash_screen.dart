@@ -1,6 +1,23 @@
+// ============================================================================
+// SCREEN: Splash Screen
+// FILE: lib/screens/splash_screen.dart
+// PURPOSE: Animated entry screen showing the AI Travel Assistant logo and name.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Splash screen hatao, direct home ya login pe jao!"
+//    - OPTION 1: In lib/main.dart, change:
+//        initialRoute: AppRoutes.splash,  --->  initialRoute: AppRoutes.mainShell,
+//    - OPTION 2: In lib/core/app_config.dart, set:
+//        AppConfig.skipOnboarding = true;
+//        AppConfig.requireLogin = false;
+// 2. TEACHER: "Splash delay kam karo ya fast karo!"
+//    - In lib/core/app_config.dart, set AppConfig.fastSplash = true; (Line 27 below)
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../core/app_routes.dart';
+import '../core/app_config.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -24,8 +41,20 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller.forward();
 
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
+    final int delaySeconds = AppConfig.fastSplash ? 1 : 3;
+
+    Future.delayed(Duration(seconds: delaySeconds), () {
+      if (!mounted) return;
+
+      if (AppConfig.skipOnboarding) {
+        if (AppConfig.requireLogin) {
+          Navigator.of(context).pushReplacementNamed(AppRoutes.loginSignup);
+        } else {
+          Navigator.of(context).pushReplacementNamed(AppRoutes.mainShell);
+        }
+      } else {
+        Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
+      }
     });
   }
 
@@ -51,8 +80,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  AppTheme.primaryBlue.withOpacity(0.6),
-                  AppTheme.primaryBlue.withOpacity(0.9),
+                  AppTheme.primaryBlue.withValues(alpha: 0.6),
+                  AppTheme.primaryBlue.withValues(alpha: 0.9),
                 ],
               ),
             ),

@@ -1,6 +1,22 @@
+// ============================================================================
+// SCREEN: Trip Booking Screen
+// FILE: lib/screens/booking_screen.dart
+// PURPOSE: Allows users to configure custom trip preferences (Destination, Trip Type,
+//          Number of Travelers, Transport Mode, Accommodation, Budget).
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Booking screen app se hata do!"
+//    - In lib/core/app_config.dart, set: AppConfig.enableBooking = false;
+// 2. TEACHER: "Travelers count ya default values change karo!"
+//    - Look at lines 33-38 below (_travelers = 2, _tripType = 'solo').
+// 3. TEACHER: "Filters icon hata do!"
+//    - In app bar actions (Line 72), comment out the filters IconButton.
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../core/dummy_data.dart';
+import '../core/app_config.dart';
 import '../widgets/custom_app_bar.dart';
 import 'filters_screen.dart';
 import 'trip_itineraries_screen.dart';

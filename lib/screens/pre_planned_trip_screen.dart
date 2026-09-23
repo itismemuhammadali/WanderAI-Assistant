@@ -1,3 +1,16 @@
+// ============================================================================
+// SCREEN: Pre-Planned Trip Screen
+// FILE: lib/screens/pre_planned_trip_screen.dart
+// PURPOSE: Multi-day detailed itinerary breakdown with morning/afternoon/evening
+//          schedules, hotel recommendations, and direct booking trigger.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Days schedule ya hotel list change karo!"
+//    - Look at lines 20-30 below (`days` and `hotels` lists).
+// 2. TEACHER: "Book Now button hatao!"
+//    - Comment out bottomNavigationBar ElevatedButton at Line 110!
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import 'booking_details_screen.dart';

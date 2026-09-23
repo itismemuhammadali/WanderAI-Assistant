@@ -1,3 +1,16 @@
+// ============================================================================
+// SCREEN: My Bookings Screen (History & Active Trips)
+// FILE: lib/screens/my_bookings_screen.dart
+// PURPOSE: Displays active, upcoming, and past tour bookings with status badges
+//          (Confirmed, In Progress, Completed), cancellation, and invoice download.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Booking status badge ka color change karo!"
+//    - Look at `_getStatusColor` method around Line 65.
+// 2. TEACHER: "Cancel booking popup demo karo!"
+//    - Tap the 'Cancel' button on any active card to show the dialog!
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../widgets/custom_app_bar.dart';

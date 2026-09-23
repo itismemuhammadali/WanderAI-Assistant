@@ -1,3 +1,16 @@
+// ============================================================================
+// SCREEN: Booking Confirmation Screen
+// FILE: lib/screens/booking_confirmation_screen.dart
+// PURPOSE: Displays booking success tick, unique booking reference ID, summary card,
+//          and "Back to Home" navigation button.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Direct Home pe jao confirmation ke baad!"
+//    - "Back to Home" button (Line 135) already calls pushNamedAndRemoveUntil to MainShell.
+// 2. TEACHER: "Booking ID ka format change karo!"
+//    - Look at booking ID generator / display section around Line 45.
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../core/app_routes.dart';
