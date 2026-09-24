@@ -1,3 +1,17 @@
+// ============================================================================
+// SCREEN: Traveler Booking Details Screen
+// FILE: lib/screens/booking_details_screen.dart
+// PURPOSE: Collects passenger details, contact number, emergency contact,
+//          pickup location, date, and duration for travel reservation.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Emergency phone field hatao!"
+//    - Search for: 🔴 [START] FIELD: Emergency Phone Field
+//    - Comment out from [START] to [END] of that block!
+// 2. TEACHER: "Booking save kahan ho rahi hai?"
+//    - Method: _continue() saves via BookingService.addBooking!
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/profile.dart';
 import '../core/booking_service.dart';
@@ -108,12 +122,21 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 readOnly: true,
               ),
               const SizedBox(height: 12),
+              // ======================================================
+              // 🔴 [START] FIELD: Emergency Phone Field
+              // DESCRIPTION: Validated contact field for emergency situations.
+              // 🎓 TO HIDE THIS FIELD:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               TextFormField(
                 controller: _emergencyPhoneController,
                 decoration: const InputDecoration(labelText: 'Emergency Phone'),
                 keyboardType: TextInputType.phone,
                 validator: (v) => v == null || v.isEmpty ? 'Required' : null,
               ),
+              // ======================================================
+              // 🔴 [END] FIELD: Emergency Phone Field
+              // ======================================================
               const SizedBox(height: 12),
               GestureDetector(
                 onTap: _pickDate,
@@ -135,10 +158,19 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 decoration: const InputDecoration(labelText: 'Trip Duration'),
               ),
               const SizedBox(height: 24),
+              // ======================================================
+              // 🔴 [START] BUTTON: Continue to Confirmation Button
+              // DESCRIPTION: Submits passenger booking details and proceeds.
+              // 🎓 TO HIDE THIS BUTTON:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               ElevatedButton(
                 onPressed: _continue,
                 child: const Text('Continue to Confirmation'),
               ),
+              // ======================================================
+              // 🔴 [END] BUTTON: Continue to Confirmation Button
+              // ======================================================
             ],
           ),
         ),

@@ -1,3 +1,15 @@
+// ============================================================================
+// SCREEN: Explore Destinations Screen
+// FILE: lib/screens/explore_screen.dart
+// PURPOSE: Displays a searchable 2 column grid of Pakistan travel destinations.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Grid count change karo (e.g. 1 column ya 3 columns)!"
+//    - Line: crossAxisCount: 2 -> Change to 1 or 3!
+// 2. TEACHER: "Destination list kahan se load ho rahi hai?"
+//    - File: lib/core/dummy_data.dart -> popularDestinations list!
+// ============================================================================
+
 import 'package:flutter/material.dart';
 import '../core/dummy_data.dart';
 import '../core/app_routes.dart';
@@ -11,6 +23,12 @@ class ExploreScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Explore'),
+      // ======================================================
+      // 🔴 [START] GRID: Explore Destinations Grid
+      // DESCRIPTION: 2 column grid of destination cards.
+      // 🎓 TO HIDE THIS GRID:
+      //    Comment out lines from [START] to [END] of this block.
+      // ======================================================
       body: GridView.builder(
         padding: const EdgeInsets.all(24),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

@@ -6,6 +6,16 @@
 //          Karachi, Islamabad, Multan, Vehari, Peshawar, Quetta, Hunza, Skardu,
 //          Swat, Naran, Gwadar, Abbottabad), horizontal From and To selector with
 //          center swap button, floating map controls, and route attractions.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Bottom floating route card hata do!"
+//    - Search for: 🔴 [START] CARD: Route Details Floating Bottom Card
+//    - Comment out from [START] to [END] of that Positioned widget!
+// 2. TEACHER: "From aur To city selector hata do!"
+//    - Search for: 🔴 [START] SELECTOR: From and To City Selector
+//    - Comment out that Row inside AppBar!
+// 3. TEACHER: "Routing road coordinates kahan se calculate ho rahe hain?"
+//    - Method: _fetchRealRoadRoutes() queries OSRM driving engine!
 // ============================================================================
 
 import 'dart:convert';
@@ -662,6 +672,12 @@ class _MapScreenState extends State<MapScreen> {
         backgroundColor: Colors.white,
         elevation: 0.5,
         titleSpacing: 8,
+        // ======================================================
+        // 🔴 [START] SELECTOR: From and To City Selector
+        // DESCRIPTION: Origin and Destination city selector pills with center swap icon.
+        // 🎓 TO HIDE THIS SELECTOR:
+        //    Comment out lines from [START] to [END] of this block.
+        // ======================================================
         title: Row(
           children: [
             // Left Pill: From Origin
@@ -756,6 +772,9 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ],
         ),
+        // ======================================================
+        // 🔴 [END] SELECTOR: From and To City Selector
+        // ======================================================
       ),
       body: Stack(
         children: [
@@ -1037,7 +1056,12 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
 
-          // Route Details Floating Bottom Card
+          // ======================================================
+          // 🔴 [START] CARD: Route Details Floating Bottom Card
+          // DESCRIPTION: Shows route name, travel distance, time, and action buttons.
+          // 🎓 TO HIDE THIS CARD:
+          //    Comment out lines from [START] to [END] of this block.
+          // ======================================================
           Positioned(
             bottom: 24,
             left: 16,
@@ -1193,6 +1217,9 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ),
+          // ======================================================
+          // 🔴 [END] CARD: Route Details Floating Bottom Card
+          // ======================================================
         ],
       ),
     );

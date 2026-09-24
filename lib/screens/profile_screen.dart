@@ -4,6 +4,16 @@
 // PURPOSE: Displays user avatar, account details, and navigation links to My Bookings,
 //          Saved Places, Travel Preferences, Help and Support, real device photo picker,
 //          and 3 tier account actions (Logout, Delete User Data, Delete Account).
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Profile photo ya Camera button hata do!"
+//    - Search for: 🔴 [START] AVATAR: Profile Photo and Camera Badge
+//    - Comment out from [START] to [END] of that block!
+// 2. TEACHER: "Delete Account option hatao!"
+//    - Search for: 🔴 [START] ACTIONS: Account Action Tiles
+//    - Comment out the _actionTile for Delete Account!
+// 3. TEACHER: "Photo picker gallery kahan se khulti hai?"
+//    - Method: _pickImageFromGallery() using image_picker plugin!
 // ============================================================================
 
 import 'dart:io';
@@ -317,7 +327,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 8),
-              // User Profile Avatar and Camera Badge
+              // ======================================================
+              // 🔴 [START] AVATAR: Profile Photo and Camera Badge
+              // DESCRIPTION: Circular user avatar with camera icon overlay for device gallery and camera photo updates.
+              // 🎓 TO HIDE THIS AVATAR:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               Center(
                 child: GestureDetector(
                   onTap: _showPhotoPickerModal,
@@ -343,6 +358,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
+              // ======================================================
+              // 🔴 [END] AVATAR: Profile Photo and Camera Badge
+              // ======================================================
               const SizedBox(height: 16),
               Text(
                 name,
@@ -355,7 +373,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 12),
 
-              // Demo Bookings Loader Quick Button
+              // ======================================================
+              // 🔴 [START] BUTTON: Load Demo Bookings Button
+              // DESCRIPTION: Injects sample booking records into memory for instant viva demonstration.
+              // 🎓 TO HIDE THIS BUTTON:
+              //    Comment out lines from [START] to [END] of this block.
+              // ======================================================
               OutlinedButton.icon(
                 onPressed: () {
                   setState(() {
@@ -375,9 +398,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   side: BorderSide(color: Colors.teal.shade300),
                 ),
               ),
+              // ======================================================
+              // 🔴 [END] BUTTON: Load Demo Bookings Button
+              // ======================================================
               const SizedBox(height: 24),
 
-              // Account Options
+              // ======================================================
+              // 🔴 [START] TILES: Account Navigation Tiles
+              // DESCRIPTION: Links to Travel Preferences, My Bookings, Saved Places, Notifications, and Help.
+              // 🎓 TO HIDE ANY TILE:
+              //    Comment out the specific _tile line below.
+              // ======================================================
               _tile(Icons.tune, 'Travel Preferences', () {
                 Navigator.push(context, MaterialPageRoute(builder: (c) => const TripPreferencesScreen()));
               }),
@@ -401,11 +432,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _tile(Icons.help_outline, 'Help and Support', () {
                 Navigator.push(context, MaterialPageRoute(builder: (c) => const HelpSupportScreen()));
               }),
+              // ======================================================
+              // 🔴 [END] TILES: Account Navigation Tiles
+              // ======================================================
 
               const Divider(),
               const SizedBox(height: 8),
 
-              // Three Account Actions (Logout, Delete User Data, Delete Account)
+              // ======================================================
+              // 🔴 [START] ACTIONS: Account Action Tiles
+              // DESCRIPTION: Logout, Delete User Data, and Permanent Delete Account flows.
+              // 🎓 TO HIDE AN ACTION:
+              //    Comment out the specific _actionTile block below.
+              // ======================================================
               _actionTile(
                 Icons.logout,
                 'Log Out',

@@ -11,6 +11,16 @@ import '../widgets/custom_app_bar.dart';
 // PURPOSE: Displays wayside tourist spots along the travel corridor.
 // Filters attractions within 85 km of the active driving route.
 // Displays road accessibility badges and practical travel preparation tips.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Route corridor banner hata do!"
+//    - Search for: 🔴 [START] BANNER: Route Corridor Information Banner
+//    - Comment out or set _filterByRouteCorridor to false!
+// 2. TEACHER: "Filter chips hata do!"
+//    - Search for: 🔴 [START] CHIPS: Road Accessibility Filter Chips
+//    - Comment out that SingleChildScrollView block!
+// 3. TEACHER: "Nayi attraction add karo ya distance change karo!"
+//    - Open lib/core/dummy_data.dart and edit routeAttractions list!
 // ============================================================================
 
 class RouteAttractionsScreen extends StatefulWidget {
@@ -300,7 +310,12 @@ class _RouteAttractionsScreenState extends State<RouteAttractionsScreen> {
       appBar: const CustomAppBar(title: 'Route Attractions', showBackButton: true),
       body: Column(
         children: [
-          // Route corridor banner
+          // ======================================================
+          // 🔴 [START] BANNER: Route Corridor Information Banner
+          // DESCRIPTION: Displays active route cities and corridor radius (85 km).
+          // 🎓 TO HIDE THIS BANNER:
+          //    Comment out lines from [START] to [END] of this block.
+          // ======================================================
           if (hasRoute)
             Container(
               width: double.infinity,
@@ -364,8 +379,16 @@ class _RouteAttractionsScreenState extends State<RouteAttractionsScreen> {
                 ],
               ),
             ),
+          // ======================================================
+          // 🔴 [END] BANNER: Route Corridor Information Banner
+          // ======================================================
 
-          // Filter chips for road access
+          // ======================================================
+          // 🔴 [START] CHIPS: Road Accessibility Filter Chips
+          // DESCRIPTION: Filters attractions by Direct Road, 4x4 Jeep, or Hike Required.
+          // 🎓 TO HIDE THIS CHIPS ROW:
+          //    Comment out lines from [START] to [END] of this block.
+          // ======================================================
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -381,6 +404,9 @@ class _RouteAttractionsScreenState extends State<RouteAttractionsScreen> {
               ],
             ),
           ),
+          // ======================================================
+          // 🔴 [END] CHIPS: Road Accessibility Filter Chips
+          // ======================================================
 
           // List of attractions
           Expanded(
@@ -416,6 +442,12 @@ class _RouteAttractionsScreenState extends State<RouteAttractionsScreen> {
                       final accessibility = attraction['accessibility'] as String?;
                       final travelTip = attraction['travelTip'] as String?;
 
+                      // ======================================================
+                      // 🔴 [START] CARD: Wayside Route Attraction Card
+                      // DESCRIPTION: Wayside spot photo, distance from origin, accessibility, travel tip, and action.
+                      // 🎓 TO HIDE THIS CARD:
+                      //    Comment out lines from [START] to [END] of this block.
+                      // ======================================================
                       return Container(
                         margin: const EdgeInsets.only(bottom: 20),
                         decoration: BoxDecoration(
@@ -570,7 +602,12 @@ class _RouteAttractionsScreenState extends State<RouteAttractionsScreen> {
 
                                   const SizedBox(height: 16),
 
-                                  // Include in Itinerary Button
+                                  // ======================================================
+                                  // 🔴 [START] BUTTON: Include in Itinerary Button
+                                  // DESCRIPTION: Appends this stopover to user's active travel itinerary.
+                                  // 🎓 TO HIDE THIS BUTTON:
+                                  //    Comment out lines from [START] to [END] of this block.
+                                  // ======================================================
                                   SizedBox(
                                     width: double.infinity,
                                     child: ElevatedButton.icon(
@@ -589,12 +626,18 @@ class _RouteAttractionsScreenState extends State<RouteAttractionsScreen> {
                                       label: const Text('Include in Itinerary'),
                                     ),
                                   ),
+                                  // ======================================================
+                                  // 🔴 [END] BUTTON: Include in Itinerary Button
+                                  // ======================================================
                                 ],
                               ),
                             ),
                           ],
                         ),
                       );
+                      // ======================================================
+                      // 🔴 [END] CARD: Wayside Route Attraction Card
+                      // ======================================================
                     },
                   ),
           ),

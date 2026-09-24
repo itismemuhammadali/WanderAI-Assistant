@@ -4,6 +4,13 @@
 // PURPOSE: Customize travel companions, traveler count, budget per person,
 //          total estimated budget, and vacation moods, then proceed to
 //          the interactive trip itinerary.
+//
+// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
+// 1. TEACHER: "Budget slider hata do!"
+//    - Search for: 🔴 [START] SLIDER: Budget Slider Section
+//    - Comment out from [START] to [END] of that block!
+// 2. TEACHER: "Itinerary transition kahan ho rahi hai?"
+//    - Line: Navigator.push to TripItinerariesScreen inside View Customized Itinerary button!
 // ============================================================================
 
 import 'package:flutter/material.dart';
@@ -180,7 +187,12 @@ class _TripPreferencesScreenState extends State<TripPreferencesScreen> {
             ),
             const SizedBox(height: 28),
 
-            // Budget Slider Section (Min 3000 PKR, Max 20000 PKR)
+            // ======================================================
+            // 🔴 [START] SLIDER: Budget Slider Section
+            // DESCRIPTION: Interactive per person budget slider from PKR 3,000 to PKR 20,000.
+            // 🎓 TO HIDE THIS SLIDER:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -214,6 +226,9 @@ class _TripPreferencesScreenState extends State<TripPreferencesScreen> {
               activeColor: AppTheme.accentTeal,
               onChanged: (val) => setState(() => _budget = val),
             ),
+            // ======================================================
+            // 🔴 [END] SLIDER: Budget Slider Section
+            // ======================================================
             const SizedBox(height: 12),
 
             // Total Budget Calculation Card
@@ -287,7 +302,12 @@ class _TripPreferencesScreenState extends State<TripPreferencesScreen> {
             ),
             const SizedBox(height: 40),
 
-            // Continue Button Navigating to Trip Itinerary
+            // ======================================================
+            // 🔴 [START] BUTTON: View Customized Itinerary Button
+            // DESCRIPTION: Passes traveler settings to TripItinerariesScreen.
+            // 🎓 TO HIDE THIS BUTTON:
+            //    Comment out lines from [START] to [END] of this block.
+            // ======================================================
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -310,6 +330,9 @@ class _TripPreferencesScreenState extends State<TripPreferencesScreen> {
                 label: const Text('View Customized Itinerary'),
               ),
             ),
+            // ======================================================
+            // 🔴 [END] BUTTON: View Customized Itinerary Button
+            // ======================================================
             const SizedBox(height: 16),
           ],
         ),
