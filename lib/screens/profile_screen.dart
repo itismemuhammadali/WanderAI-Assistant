@@ -13,6 +13,7 @@ import '../core/theme.dart';
 import '../widgets/custom_app_bar.dart';
 import '../core/app_routes.dart';
 import '../core/booking_service.dart';
+import '../core/auth_service.dart';
 import 'trip_preferences_screen.dart';
 import 'my_bookings_screen.dart';
 import 'help_support_screen.dart';
@@ -165,9 +166,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(ctx).pop();
-              Navigator.pushReplacementNamed(context, AppRoutes.loginSignup);
+              await AuthService.logout();
+              if (mounted) {
+                Navigator.pushReplacementNamed(context, AppRoutes.loginSignup);
+              }
             },
             child: const Text('Log Out'),
           ),
@@ -219,16 +223,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
           TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(ctx).pop();
               BookingService.clearData();
-              Navigator.pushReplacementNamed(context, AppRoutes.loginSignup);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Your account has been deleted.'),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              await AuthService.logout();
+              if (mounted) {
+                Navigator.pushReplacementNamed(context, AppRoutes.loginSignup);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Your account has been deleted.'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             },
             child: const Text('Delete Permanently', style: TextStyle(color: Colors.white)),
           ),

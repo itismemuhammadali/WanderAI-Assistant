@@ -9,6 +9,7 @@
 // ============================================================================
 
 import 'dart:convert';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -17,9 +18,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import '../core/theme.dart';
 import '../core/dummy_data.dart';
-import '../core/app_routes.dart';
 import '../core/app_config.dart';
 import 'trip_preferences_screen.dart';
+import 'route_attractions_screen.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -374,6 +375,46 @@ class _MapScreenState extends State<MapScreen> {
       return '$minutes min';
     }
     return '${hours}h ${minutes.toString().padLeft(2, '0')}m';
+  }
+
+  List<Map<String, dynamic>> _getCorridorAttractions() {
+    final List<LatLng> activePoints = _selectedRoute == 'fast'
+        ? _fastestRoutePoints
+        : _selectedRoute == 'scenic'
+            ? _scenicRoutePoints
+            : _altRoutePoints;
+
+    if (activePoints.isEmpty) {
+      return DummyData.routeAttractions;
+    }
+
+    const double earthRadiusKm = 6371.0;
+    final int step = (activePoints.length / 70).ceil().clamp(1, activePoints.length);
+
+    final corridorAttractions = DummyData.routeAttractions.where((att) {
+      final attLat = (att['latitude'] as num?)?.toDouble() ?? 0.0;
+      final attLng = (att['longitude'] as num?)?.toDouble() ?? 0.0;
+
+      double minDist = double.infinity;
+      for (int i = 0; i < activePoints.length; i += step) {
+        final p = activePoints[i];
+        final dLat = (attLat - p.latitude) * math.pi / 180.0;
+        final dLon = (attLng - p.longitude) * math.pi / 180.0;
+        final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+            math.cos(p.latitude * math.pi / 180.0) *
+                math.cos(attLat * math.pi / 180.0) *
+                math.sin(dLon / 2) *
+                math.sin(dLon / 2);
+        final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+        final d = earthRadiusKm * c;
+        if (d < minDist) {
+          minDist = d;
+        }
+      }
+      return minDist <= 85.0;
+    }).toList();
+
+    return corridorAttractions.isNotEmpty ? corridorAttractions : DummyData.routeAttractions;
   }
 
   void _centerOnLocation() {
@@ -796,7 +837,7 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                   // Corridor Attractions Markers
                   if (_showAttractions)
-                    ...DummyData.routeAttractions.map((att) {
+                    ..._getCorridorAttractions().map((att) {
                       final lat = att['latitude'] as double? ?? 34.9085;
                       final lng = att['longitude'] as double? ?? 73.6528;
                       final cat = (att['category'] as String? ?? '').toLowerCase();
@@ -1106,7 +1147,20 @@ class _MapScreenState extends State<MapScreen> {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () {
-                            Navigator.pushNamed(context, AppRoutes.routeAttractions);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RouteAttractionsScreen(
+                                  originCity: _originCity,
+                                  destinationCity: _destinationCity,
+                                  routePoints: _selectedRoute == 'fast'
+                                      ? _fastestRoutePoints
+                                      : _selectedRoute == 'scenic'
+                                          ? _scenicRoutePoints
+                                          : _altRoutePoints,
+                                ),
+                              ),
+                            );
                           },
                           icon: const Icon(Icons.place, size: 16),
                           label: const Text('Attractions'),
@@ -1245,6 +1299,30 @@ class _MapScreenState extends State<MapScreen> {
               att['description'] ?? '',
               style: TextStyle(fontSize: 13, color: Colors.grey.shade800, height: 1.4),
             ),
+            if (att['travelTip'] != null && (att['travelTip'] as String).isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FDF4),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFBBF7D0)),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.lightbulb_outline, size: 16, color: Color(0xFF16A34A)),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        att['travelTip'] as String,
+                        style: const TextStyle(fontSize: 12, color: Color(0xFF166534), height: 1.3),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
             Row(
               children: [

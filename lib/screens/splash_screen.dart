@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../core/app_routes.dart';
 import '../core/app_config.dart';
+import '../core/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -43,8 +44,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     final int delaySeconds = AppConfig.fastSplash ? 1 : 3;
 
-    Future.delayed(Duration(seconds: delaySeconds), () {
+    Future.delayed(Duration(seconds: delaySeconds), () async {
       if (!mounted) return;
+
+      final bool loggedIn = await AuthService.isLoggedIn();
+      if (!mounted) return;
+
+      if (loggedIn) {
+        Navigator.of(context).pushReplacementNamed(AppRoutes.mainShell);
+        return;
+      }
 
       if (AppConfig.skipOnboarding) {
         if (AppConfig.requireLogin) {

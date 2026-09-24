@@ -23,6 +23,7 @@ import '../core/theme.dart';
 import '../core/app_routes.dart';
 import '../core/app_config.dart';
 import '../core/api_service.dart';
+import '../core/auth_service.dart';
 
 class LoginSignupScreen extends StatefulWidget {
   const LoginSignupScreen({super.key});
@@ -103,6 +104,11 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
     });
 
     if (result['success'] == true) {
+      await AuthService.saveLoginSession(
+        email: email.isNotEmpty ? email : AppConfig.demoEmail,
+        name: fullName.isNotEmpty ? fullName : AppConfig.demoName,
+      );
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -139,7 +145,11 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
     }
   }
 
-  void _continueAsGuest() {
+  void _continueAsGuest() async {
+    await AuthService.saveLoginSession(
+      email: 'guest@travelassistant.pk',
+      name: 'Guest Traveler',
+    );
     Navigator.of(context).pushReplacementNamed(AppRoutes.mainShell);
   }
 
