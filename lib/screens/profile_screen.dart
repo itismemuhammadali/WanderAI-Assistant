@@ -9,6 +9,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../core/theme.dart';
 import '../widgets/custom_app_bar.dart';
 import '../core/app_routes.dart';
@@ -34,12 +35,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _pickImageFromGallery() async {
     try {
+      if (Platform.isAndroid) {
+        final photosStatus = await Permission.photos.status;
+        if (photosStatus.isDenied) {
+          await Permission.photos.request();
+        }
+      }
+
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
         maxWidth: 800,
         maxHeight: 800,
         imageQuality: 85,
       );
+
       if (image != null) {
         setState(() {
           _localImageFile = File(image.path);
@@ -55,17 +64,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (e) {
       debugPrint('Error picking from gallery: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not open gallery: $e'),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
+      }
     }
   }
 
   Future<void> _takePhotoWithCamera() async {
     try {
+      final status = await Permission.camera.request();
+      if (status.isPermanentlyDenied) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Camera permission permanently denied. Open settings to enable.'),
+              backgroundColor: Colors.orange.shade800,
+              action: SnackBarAction(
+                label: 'Settings',
+                textColor: Colors.white,
+                onPressed: openAppSettings,
+              ),
+            ),
+          );
+        }
+        return;
+      }
+
+      if (!status.isGranted && !status.isLimited) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Camera permission was not granted.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        return;
+      }
+
       final XFile? photo = await _imagePicker.pickImage(
         source: ImageSource.camera,
         maxWidth: 800,
         maxHeight: 800,
         imageQuality: 85,
       );
+
       if (photo != null) {
         setState(() {
           _localImageFile = File(photo.path);
@@ -81,6 +129,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (e) {
       debugPrint('Error taking photo: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not open camera: $e'),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
+      }
     }
   }
 
