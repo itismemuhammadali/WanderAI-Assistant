@@ -167,73 +167,119 @@ When a user types a travel question in the mobile app, think of our AI Chat Syst
 Here is the exact journey of a message:
 
 ```
-[Flutter Chat Screen]
+[Flutter Chat Screen: lib/screens/chat_screen.dart:87-115]
        │
        ▼ (HTTP POST JSON)
-[FastAPI Backend /api/chat & /api/nlp/parse]
+[FastAPI Backend: backend/main.py:127-140 & 216-245]
        │
        ▼
-[NLP Processing Engine: nlp_service.py]
-  1. Text Normalization
-  2. Word Tokenization & Boundary Analysis
-  3. Longest Match Destination Extraction
-  4. Regex Origin & Duration Finder
-  5. Route Preference & Intent Classifier
-  6. Mood Tag & Budget Calculator
+[NLP Processing Engine: backend/nlp_service.py:26-102]
+  1. Text Normalization (Line 30)
+  2. Word Tokenization & Boundary Analysis (Lines 35, 50)
+  3. Longest Match Destination Dictionary (Lines 16-22, 34-38)
+  4. Regex Origin & Duration Finder (Lines 40-63)
+  5. Route Preference & Intent Classifier (Lines 64-70)
+  6. Mood Tag & Budget Calculator (Lines 71-92)
        │
        ▼
-[Database Chat Logging & Package Lookup]
+[Database Chat Logging: backend/main.py:238-239]
        │
        ▼
 [Smart Formatted Response Returned to Flutter]
 ```
 
 ### Step 1: User Types a Sentence in Flutter
-* A traveler opens `lib/screens/chat_screen.dart` and types:
+* **Exact Code Location**:
+  * Screen Handler: [lib/screens/chat_screen.dart](file:///Users/muhammadali3000/development/travel_assistant/lib/screens/chat_screen.dart#L87-L115) in function `_handleUserMessage`
+  * Network Dispatcher: [lib/core/api_service.dart](file:///Users/muhammadali3000/development/travel_assistant/lib/core/api_service.dart#L100-L115) in function `sendChatMessage`
+* A traveler opens the chat screen and types:
   > *"I want to travel from Lahore to Hunza Valley for 5 days with a luxury budget on a scenic route"*
-* The mobile app calls `ApiService.sendChatMessage()` which sends this string inside a clean JSON body via an asynchronous HTTP POST request to our FastAPI backend.
+* The mobile app calls `ApiService.sendChatMessage()` which sends this string inside a clean JSON body via an asynchronous HTTP POST request to our FastAPI backend endpoint `/api/chat`.
 
 ### Step 2: Text Normalization and Cleaning
-* **What happens**: The raw text is stripped of extra spaces and converted to lowercase using `.lower().strip()`.
+* **Exact Code Location**:
+  * NLP Service: [backend/nlp_service.py](file:///Users/muhammadali3000/development/travel_assistant/backend/nlp_service.py#L30) line 30 (`clean_text = text.lower().strip()`)
+  * Chat Endpoint: [backend/main.py](file:///Users/muhammadali3000/development/travel_assistant/backend/main.py#L221) line 221 (`user_msg = req.message.lower().strip()`)
+* **What happens**: The raw text is stripped of extra spaces and converted to lowercase.
 * **Why it matters**: A human might write "HUNZA", "hunza", or "HunZa". Converting everything to uniform lowercase ensures our system never misses a word just because of capital letters.
 
 ### Step 3: Word Tokenization and Word Boundary Matching
+* **Exact Code Location**: [backend/nlp_service.py](file:///Users/muhammadali3000/development/travel_assistant/backend/nlp_service.py#L35) line 35 (`r'\b' + re.escape(d) + r'\b'`) and line 50 (`r'\bfrom\s+' + re.escape(o) + r'\b'`)
 * **What happens**: Tokenization chops a continuous stream of text into individual words or meaningful tokens.
 * **How we do matching**: Instead of simple substring searching which causes mistakes, our engine uses word boundaries like `\b{word}\b`.
 * **Why this is critical**: If someone mentions the word "swatch", a naive search would mistakenly detect the city "Swat". By enforcing word boundaries, "swat" matches only the actual city "Swat" and ignores accidental substrings.
 
-### Step 4: Longest First Named Entity Recognition (NER)
+### Step 4: Longest First Named Entity Recognition (NER) and Destination Dictionary
+* **Exact Code Location**:
+  * Destination Dictionary: [backend/nlp_service.py](file:///Users/muhammadali3000/development/travel_assistant/backend/nlp_service.py#L16-L22) lines 16 to 22 (Contains 25 verified Pakistani tourist locations)
+  * Longest First Match Engine: [backend/nlp_service.py](file:///Users/muhammadali3000/development/travel_assistant/backend/nlp_service.py#L32-L38) lines 32 to 38
 * **What happens**: The system extracts real world entities such as locations, cities, and landmarks.
-* **Dual Engine Architecture**: We use SpaCy (`en_core_web_sm`) when available, paired with our specialized Pakistani travel dictionary covering 25 northern tourist spots and 7 travel hubs.
-* **The Longest First Trick**: Our destinations list is sorted in descending order of string length. For example, "Hunza Valley" is evaluated before "Hunza", and "Naran Kaghan" before "Naran".
+* **Dual Engine Architecture**: We load SpaCy (`en_core_web_sm`) in lines 8 to 13 when installed, paired with our specialized Pakistani travel dictionary.
+* **The Longest First Trick**: Our destinations list is sorted in descending order of string length (`sorted(self.destinations, key=len, reverse=True)`). For example, "Hunza Valley" is evaluated before "Hunza", and "Naran Kaghan" before "Naran".
 * **Why it matters**: This prevents greedy partial matching. The engine identifies the full title "Hunza Valley" without prematurely cutting it off at "Hunza".
 
 ### Step 5: Regular Expression Pattern Parsing (Origins and Durations)
-* **Origin Detection**: The engine scans for contextual patterns like `from [city]` or `leaving [city]` to accurately distinguish the starting point from the destination.
-* **Duration Extraction**: It extracts numbers preceding day keywords, such as `5 days` or `3 nights`. It also understands everyday spoken terms:
-  * *"weekend"* automatically resolves to 2 days.
-  * *"week"* automatically resolves to 7 days.
+* **Exact Code Location**:
+  * Origin Cities List: [backend/nlp_service.py](file:///Users/muhammadali3000/development/travel_assistant/backend/nlp_service.py#L24) line 24 (Islamabad, Rawalpindi, Lahore, Karachi, Peshawar, Faisalabad, Multan)
+  * Origin Regex Parser: [backend/nlp_service.py](file:///Users/muhammadali3000/development/travel_assistant/backend/nlp_service.py#L39-L53) lines 39 to 53 (`r'\b(?:from|leaving)\s+([a-zA-Z\s]+?)(?:\s+(?:to|for|heading)|\b)'`)
+  * Duration Number & Colloquial Days: [backend/nlp_service.py](file:///Users/muhammadali3000/development/travel_assistant/backend/nlp_service.py#L54-L63) lines 54 to 63 (`r'(\d+)\s*(?:-|to)?\s*(?:day|days|night|nights)'`)
+* **Origin Detection**: Scans for contextual patterns like `from [city]` or `leaving [city]` to accurately distinguish the starting point from the destination.
+* **Duration Extraction**: Extracts numbers preceding day keywords, such as `5 days` or `3 nights`. It also understands everyday spoken terms:
+  * *"weekend"* automatically resolves to 2 days (line 60).
+  * *"week"* automatically resolves to 7 days (line 62).
 
 ### Step 6: Intent Classification and Route Preference Matching
+* **Exact Code Location**:
+  * Preference Parsing: [backend/nlp_service.py](file:///Users/muhammadali3000/development/travel_assistant/backend/nlp_service.py#L64-L70) lines 64 to 70
+  * Conversational Highway Logic: [backend/main.py](file:///Users/muhammadali3000/development/travel_assistant/backend/main.py#L232-L234) lines 232 to 234
 * **What happens**: The engine categorizes what kind of travel experience the user desires.
 * **Fastest versus Scenic**:
-  * Words like *"fast"*, *"express"*, *"direct"*, *"quick"* trigger the fastest highway route.
-  * Words like *"scenic"*, *"view"*, *"nature"*, *"stops"*, *"pass"* trigger the mountain corridor route.
+  * Words like *"fast"*, *"express"*, *"direct"*, *"quick"* trigger the fastest highway route (lines 66 to 67).
+  * Words like *"scenic"*, *"view"*, *"nature"*, *"stops"*, *"pass"* trigger the mountain corridor route (lines 68 to 69).
 
 ### Step 7: Mood Tagging and Dynamic Budget Estimation
+* **Exact Code Location**:
+  * Mood Tag Clustering: [backend/nlp_service.py](file:///Users/muhammadali3000/development/travel_assistant/backend/nlp_service.py#L71-L83) lines 71 to 83
+  * Daily Rate Multiplier: [backend/nlp_service.py](file:///Users/muhammadali3000/development/travel_assistant/backend/nlp_service.py#L84-L92) lines 84 to 92
 * **Keyword Clusters**: Words are matched against semantic interest clusters:
-  * *"peaks"*, *"hiking"*, *"climbing"* trigger the **Mountains** tag.
-  * *"lake"*, *"waterfall"*, *"river"* trigger the **Lakes & Waterfalls** tag.
-  * *"fort"*, *"ancient"*, *"culture"* trigger the **Cultural Heritage** tag.
+  * *"peaks"*, *"hiking"*, *"climbing"* trigger the **Mountains** tag (line 73).
+  * *"lake"*, *"waterfall"*, *"river"* trigger the **Lakes & Waterfalls** tag (line 75).
+  * *"fort"*, *"ancient"*, *"culture"* trigger the **Cultural Heritage** tag (line 77).
 * **Budget Logic**: The system analyzes spending keywords to estimate total travel cost:
-  * Luxury keywords (*"resort"*, *"luxury"*, *"5 star"*) use PKR 14000 per day.
-  * Budget keywords (*"cheap"*, *"budget"*, *"backpack"*) use PKR 4500 per day.
-  * Standard trips use PKR 8000 per day.
-  * The total estimated budget is dynamically calculated by multiplying the daily rate by the trip duration.
+  * Luxury keywords (*"resort"*, *"luxury"*, *"5 star"*) use PKR 14000 per day (line 87).
+  * Budget keywords (*"cheap"*, *"budget"*, *"backpack"*) use PKR 4500 per day (line 89).
+  * Standard trips use PKR 8000 per day (line 85).
+  * The total estimated budget is dynamically calculated by multiplying the daily rate by the trip duration (`base_rate_per_day * duration_days`, line 91).
 
 ### Step 8: Safe Offline Fallback in Mobile App
+* **Exact Code Location**:
+  * Client Offline Keyword Engine: [lib/core/api_service.dart](file:///Users/muhammadali3000/development/travel_assistant/lib/core/api_service.dart#L114-L124) lines 114 to 124
+  * Client UI Exception Catch: [lib/screens/chat_screen.dart](file:///Users/muhammadali3000/development/travel_assistant/lib/screens/chat_screen.dart#L107-L114) lines 107 to 114
 * What if the traveler is in a remote valley without internet connectivity?
-* `lib/core/api_service.dart` includes local keyword pattern matching right inside the Flutter client. If the backend server does not respond within the timeout window, the app gracefully provides helpful local recommendations so the user never faces a crashed or blank screen.
+* If the backend server does not respond within the 10 second timeout window, the app catches the error and executes local keyword pattern matching right inside Flutter so the user never faces a crashed or blank screen.
+
+---
+
+### Master Code Navigation Table for Viva Examiners
+
+| Feature Name | Exact Source File | Exact Line Numbers | What to Tell the Examiner |
+|---|---|---|---|
+| **Destination Dictionary** | `backend/nlp_service.py` | Lines 16 to 22 | List of 25 verified Pakistani destinations like Hunza, Skardu, Swat, Naran Kaghan, Chitral. |
+| **Origin Hubs List** | `backend/nlp_service.py` | Line 24 | List of 7 major departure cities like Islamabad, Lahore, Karachi, Peshawar. |
+| **Text Normalization** | `backend/nlp_service.py` | Line 30 | Cleans input with `.lower().strip()` to eliminate casing differences. |
+| **Longest First NER Matching** | `backend/nlp_service.py` | Lines 32 to 38 | Sorts destinations by length descending so multi word cities match first. |
+| **Regex Word Boundary** | `backend/nlp_service.py` | Line 35 | Uses `\b{word}\b` to prevent false positive substring collisions like swatch and Swat. |
+| **Origin Regex Extraction** | `backend/nlp_service.py` | Lines 40 to 53 | Captures text after keywords `from` or `leaving` to isolate departure city. |
+| **Trip Duration Extraction** | `backend/nlp_service.py` | Lines 55 to 63 | Numerical regex for days or nights, plus colloquial mappings for weekend and week. |
+| **Route Preference Classifier** | `backend/nlp_service.py` | Lines 64 to 70 | Separates fast highway intent from scenic mountain corridor intent. |
+| **Mood Tag Clustering** | `backend/nlp_service.py` | Lines 71 to 83 | Tags queries with Mountains, Lakes, Cultural Heritage, or Adventure. |
+| **Dynamic Budget Calculator** | `backend/nlp_service.py` | Lines 84 to 92 | Multiplies luxury, standard, or budget daily rates by the duration. |
+| **FastAPI NLP Parse Endpoint** | `backend/main.py` | Lines 127 to 140 | POST `/api/nlp/parse` endpoint receiving raw queries and returning structured JSON. |
+| **FastAPI Conversational Chat** | `backend/main.py` | Lines 216 to 245 | POST `/api/chat` endpoint returning curated answers and saving chat history. |
+| **Chat Message Persistence** | `backend/main.py` | Lines 238 to 239 | Calls database service to persist both user inquiry and assistant reply. |
+| **Flutter Chat UI Handler** | `lib/screens/chat_screen.dart` | Lines 87 to 115 | Sends user message, updates reactive list state, and scrolls to bottom. |
+| **Flutter Network Dispatcher** | `lib/core/api_service.dart` | Lines 100 to 115 | Asynchronous HTTP POST call with 10 second timeout to backend `/api/chat`. |
+| **Client Side Offline Fallback** | `lib/core/api_service.dart` | Lines 117 to 124 | Local pattern matching in Flutter so app works even in mountain dead zones. |
 
 ---
 
@@ -246,4 +292,5 @@ Here is the exact journey of a message:
 | **What is Tokenization in your app?** | Tokenization breaks the traveler input sentence into discrete linguistic units and words so our regex boundary filters can inspect them individually. |
 | **What is Normalization?** | Normalization trims whitespace and unifies letter casing to lowercase so that user typing quirks do not break keyword detection. |
 | **How do you avoid false location matches?** | We sort our destination dictionary by longest string length first and use regular expression word boundaries so words like swatch never trigger a false positive for Swat. |
+
 
