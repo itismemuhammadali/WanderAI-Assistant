@@ -427,7 +427,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const TripPreferencesScreen(),
+                    builder: (context) => TripPreferencesScreen(destination: _destination),
                   ),
                 );
               },

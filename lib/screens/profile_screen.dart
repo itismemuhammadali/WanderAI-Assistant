@@ -2,16 +2,13 @@
 // SCREEN: User Profile Screen
 // FILE: lib/screens/profile_screen.dart
 // PURPOSE: Displays user avatar, account details, and navigation links to My Bookings,
-//          Saved Places, Travel Preferences, Help & Support, and Logout dialog.
-//
-// 🎓 TEACHER DEFENSE / VIVA QUICK TRICKS:
-// 1. TEACHER: "Profile Screen se koi option hata do (e.g. Help & Support ya My Bookings)!"
-//    - Look at the ListTiles in the build method (Lines 60-110). Comment out any tile!
-// 2. TEACHER: "Logout dialog ka confirmation bypass karo!"
-//    - Call `Navigator.of(context).pushReplacementNamed(AppRoutes.loginSignup);` directly.
+//          Saved Places, Travel Preferences, Help and Support, real device photo picker,
+//          and 3 tier account actions (Logout, Delete User Data, Delete Account).
 // ============================================================================
 
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../core/theme.dart';
 import '../widgets/custom_app_bar.dart';
 import '../core/app_routes.dart';
@@ -29,16 +26,62 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String _avatarUrl =
+  final String _avatarUrl =
       'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400&auto=format&fit=crop';
+  File? _localImageFile;
+  final ImagePicker _imagePicker = ImagePicker();
 
-  final List<String> _galleryAvatars = const [
-    'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=400&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=400&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=400&auto=format&fit=crop',
-  ];
+  Future<void> _pickImageFromGallery() async {
+    try {
+      final XFile? image = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+      if (image != null) {
+        setState(() {
+          _localImageFile = File(image.path);
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile photo updated from device gallery!'),
+              backgroundColor: Color(0xFF0D9488),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error picking from gallery: $e');
+    }
+  }
+
+  Future<void> _takePhotoWithCamera() async {
+    try {
+      final XFile? photo = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+      if (photo != null) {
+        setState(() {
+          _localImageFile = File(photo.path);
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('New portrait captured with camera!'),
+              backgroundColor: Color(0xFF0D9488),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error taking photo: $e');
+    }
+  }
 
   void _showPhotoPickerModal() {
     showModalBottomSheet(
@@ -69,7 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Select a method to update your profile photo:',
+              'Select a photo from your device or capture a fresh selfie:',
               style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
             ),
             const SizedBox(height: 20),
@@ -83,10 +126,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: const Icon(Icons.photo_library, color: Color(0xFF0D9488)),
               ),
               title: const Text('Choose from Gallery', style: TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: const Text('Select a portrait from your saved photos'),
+              subtitle: const Text('Open device photos to select a picture'),
               onTap: () {
                 Navigator.pop(ctx);
-                _showGallerySelector();
+                _pickImageFromGallery();
               },
             ),
             const Divider(),
@@ -100,81 +143,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: const Icon(Icons.camera_alt, color: Colors.orange),
               ),
               title: const Text('Take Photo / Camera', style: TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: const Text('Capture a new selfie with your camera'),
+              subtitle: const Text('Launch device camera to take a photo'),
               onTap: () {
                 Navigator.pop(ctx);
-                setState(() {
-                  _avatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop';
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Camera photo captured and profile updated!'),
-                    backgroundColor: Color(0xFF0D9488),
-                  ),
-                );
+                _takePhotoWithCamera();
               },
             ),
             const SizedBox(height: 12),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showGallerySelector() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Select From Gallery', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 90,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _galleryAvatars.length,
-                separatorBuilder: (context, index) => const SizedBox(width: 14),
-                itemBuilder: (context, index) {
-                  final photo = _galleryAvatars[index];
-                  final isCurrent = photo == _avatarUrl;
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      setState(() {
-                        _avatarUrl = photo;
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Profile photo updated from gallery!'),
-                          backgroundColor: Color(0xFF0D9488),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isCurrent ? const Color(0xFF0D9488) : Colors.transparent,
-                          width: 3,
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        radius: 38,
-                        backgroundImage: NetworkImage(photo),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -185,29 +160,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        title: const Text('Log Out'),
+        content: const Text('Are you sure you want to log out of your account?'),
         actions: [
           TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
-          TextButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               Navigator.pushReplacementNamed(context, AppRoutes.loginSignup);
             },
-            child: const Text('Logout', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text('Log Out'),
           ),
         ],
       ),
     );
   }
 
-  void _showClearDataDialog() {
+  void _showDeleteUserDataDialog() {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Reset Demo & App Data'),
+        title: const Text('Delete User Data'),
         content: const Text(
-          'This will clear all active bookings and reset your travel state to a fresh new user profile.',
+          'This will erase all your saved preferences, cached trip details, and booking records while keeping your account active.',
         ),
         actions: [
           TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
@@ -216,15 +191,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Navigator.of(ctx).pop();
               setState(() {
                 BookingService.clearData();
+                _localImageFile = null;
               });
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('App data reset to fresh user state.'),
+                  content: Text('All user data and bookings have been erased.'),
                   backgroundColor: Colors.blueGrey,
                 ),
               );
             },
-            child: const Text('Reset Data', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+            child: const Text('Delete Data', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -278,10 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 8),
-              // ======================================================
-              // 🔴 [START] COMPONENT: User Profile Avatar & Camera Badge
-              // DESCRIPTION: Circular user profile photo with tap action sheet.
-              // ======================================================
+              // User Profile Avatar and Camera Badge
               Center(
                 child: GestureDetector(
                   onTap: _showPhotoPickerModal,
@@ -290,7 +263,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 54,
-                        backgroundImage: NetworkImage(_avatarUrl),
+                        backgroundImage: _localImageFile != null
+                            ? FileImage(_localImageFile!) as ImageProvider
+                            : NetworkImage(_avatarUrl),
                       ),
                       Positioned(
                         bottom: 0,
@@ -305,28 +280,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              // ======================================================
-              // 🔴 [END] COMPONENT: User Profile Avatar & Camera Badge
-              // ======================================================
+              const SizedBox(height: 16),
+              Text(
+                name,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                email,
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+              ),
               const SizedBox(height: 12),
 
-              Text(name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              Text(email, style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
-              const SizedBox(height: 16),
-
-              const Divider(),
-
-              // Trip Preferences Tile
-              ListTile(
-                leading: Icon(Icons.settings, color: AppTheme.accentTeal),
-                title: const Text('Trip Preferences'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (c) => const TripPreferencesScreen()));
+              // Demo Bookings Loader Quick Button
+              OutlinedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    BookingService.loadDemoData();
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Demo bookings populated! Check My Bookings.'),
+                      backgroundColor: Color(0xFF0D9488),
+                    ),
+                  );
                 },
+                icon: const Icon(Icons.playlist_add_check, size: 18),
+                label: const Text('Load Demo Bookings'),
+                style: OutlinedButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  side: BorderSide(color: Colors.teal.shade300),
+                ),
               ),
-              const Divider(),
+              const SizedBox(height: 24),
+
+              // Account Options
+              _tile(Icons.tune, 'Travel Preferences', () {
+                Navigator.push(context, MaterialPageRoute(builder: (c) => const TripPreferencesScreen()));
+              }),
 
               // My Bookings Tile
               _tile(Icons.book, 'My Bookings', () {
@@ -343,17 +334,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Navigator.pushNamed(context, AppRoutes.notificationsScreen);
               }),
 
-              // Help & Support Tile
-              _tile(Icons.help_outline, 'Help & Support', () {
+              // Help and Support Tile
+              _tile(Icons.help_outline, 'Help and Support', () {
                 Navigator.push(context, MaterialPageRoute(builder: (c) => const HelpSupportScreen()));
               }),
 
               const Divider(),
               const SizedBox(height: 8),
 
-              // ======================================================
-              // 🔴 [START] SECTION: Three Account Actions (Logout, Clear Data, Delete Account)
-              // ======================================================
+              // Three Account Actions (Logout, Delete User Data, Delete Account)
               _actionTile(
                 Icons.logout,
                 'Log Out',
@@ -362,10 +351,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 8),
               _actionTile(
-                Icons.restore,
-                'Clear App Data / Reset Demo',
+                Icons.delete_sweep,
+                'Delete User Data',
                 Colors.orange.shade800,
-                _showClearDataDialog,
+                _showDeleteUserDataDialog,
               ),
               const SizedBox(height: 8),
               _actionTile(
@@ -374,9 +363,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Colors.red.shade700,
                 _showDeleteAccountDialog,
               ),
-              // ======================================================
-              // 🔴 [END] SECTION: Three Account Actions
-              // ======================================================
               const SizedBox(height: 24),
             ],
           ),
